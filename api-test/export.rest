@@ -1,0 +1,20 @@
+GET http://localhost:3000/export/fileslist HTTP/1.1
+
+###
+POST http://localhost:3000/export/import HTTP/1.1
+Content-Type: application/json
+
+{
+    "filename": "file_example_XLS_5000.xlsx",
+    "sheetname":"Sheet1",
+    "recordno":80
+}  
+####
+POST http://localhost:3000/import/verify HTTP/1.1
+Content-Type: application/json
+
+{
+    "filename": "Book1.xlsx",
+    "sheetname":"Sheet1"
+    //"recordno":80
+}  

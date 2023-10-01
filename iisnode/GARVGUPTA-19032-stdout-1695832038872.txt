@@ -1,0 +1,122 @@
+running =\\.\pipe\2ed6577e-623a-42fa-af45-84db5c56cb7c
+[
+  {
+    uid: 13,
+    ipaddress: '127.0.0.1',
+    name: 'user1',
+    email: 'user1@admin.com',
+    status: 1,
+    role: 0,
+    comcode: 'asdaadasd'
+  }
+]
+[
+  {
+    uid: 13,
+    ipaddress: '127.0.0.1',
+    name: 'user1',
+    email: 'user1@admin.com',
+    status: 1,
+    role: 0,
+    comcode: 'asdaadasd'
+  }
+]
+users=> [
+  {
+    uid: 12,
+    ipaddress: '127.0.0.1',
+    name: 'admin',
+    macaddress: '',
+    email: 'admin@admin.com',
+    password: 'f2847944e69a8b96ddd0b6f46ef545bd014d562b7a16daaae2bcce34125e6ae6e8dfb48f67e5f307233951e8c95d3d84988cbac98ff9c3e298cc24f074ad3fd8',
+    salt: 'a1c8a50fe180f59a4b7b2587474884a6e5c401a1',
+    status: 1,
+    comcode: 'asdaadasd',
+    role: 1
+  }
+]
+null
+connection => null
+null [
+  {
+    uid: 12,
+    ipaddress: '127.0.0.1',
+    name: 'admin',
+    macaddress: '',
+    email: 'admin@admin.com',
+    password: 'f2847944e69a8b96ddd0b6f46ef545bd014d562b7a16daaae2bcce34125e6ae6e8dfb48f67e5f307233951e8c95d3d84988cbac98ff9c3e298cc24f074ad3fd8',
+    salt: 'a1c8a50fe180f59a4b7b2587474884a6e5c401a1',
+    status: 1,
+    comcode: 'asdaadasd',
+    role: 1
+  }
+]
+user found=> [
+  {
+    uid: 12,
+    ipaddress: '127.0.0.1',
+    name: 'admin',
+    macaddress: '',
+    email: 'admin@admin.com',
+    password: 'f2847944e69a8b96ddd0b6f46ef545bd014d562b7a16daaae2bcce34125e6ae6e8dfb48f67e5f307233951e8c95d3d84988cbac98ff9c3e298cc24f074ad3fd8',
+    salt: 'a1c8a50fe180f59a4b7b2587474884a6e5c401a1',
+    status: 1,
+    comcode: 'asdaadasd',
+    role: 1
+  }
+]
+[
+  {
+    uid: 13,
+    ipaddress: '127.0.0.1',
+    name: 'user1',
+    email: 'user1@admin.com',
+    status: 1,
+    role: 0,
+    comcode: 'asdaadasd'
+  }
+]
+[
+  {
+    uid: 13,
+    ipaddress: '127.0.0.1',
+    name: 'user1',
+    email: 'user1@admin.com',
+    status: 1,
+    role: 0,
+    comcode: 'asdaadasd'
+  }
+]
+[
+  {
+    uid: 13,
+    ipaddress: '127.0.0.1',
+    name: 'user1',
+    email: 'user1@admin.com',
+    status: 1,
+    role: 0,
+    comcode: 'asdaadasd'
+  }
+]
+[
+  {
+    uid: 13,
+    ipaddress: '127.0.0.1',
+    name: 'user1',
+    email: 'user1@admin.com',
+    status: 1,
+    role: 0,
+    comcode: 'asdaadasd'
+  }
+]
+[
+  {
+    uid: 13,
+    ipaddress: '127.0.0.1',
+    name: 'user1',
+    email: 'user1@admin.com',
+    status: 1,
+    role: 0,
+    comcode: 'asdaadasd'
+  }
+]
