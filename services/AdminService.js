@@ -1,7 +1,7 @@
 const hash = require("../utilites/Hashing");
 const connection = require("../db/connection");
-const { UserModel } = require("../models/UserModel");
-const { use } = require("../routes/admin");
+// const { UserModel } = require("../models/UserModel");
+// const { use } = require("../routes/admin");
 var crypto = require('crypto');
 const Hashing = require("../utilites/Hashing");
 
@@ -25,7 +25,7 @@ class AdminService {
                     {
                     conn.query("select * from user where email=? and password=? and role=1", [username, hashPassword], (err, result) => {
                         conn.release();
-                        console.log(err, result);
+                        // console.log(err, result);
                         if (err) reject(err);
                         else if (result.length == 0) {
                             reject(err);
@@ -77,7 +77,7 @@ class AdminService {
                 else
                 {
                 conn.query("select uid,ipaddress,name,email,status,role,comcode from user where role != 1", (err, result) => {
-                     console.log(result);
+                    //  console.log(result);
                     conn.release();
                     if (err) reject(err);
                     resolve(result);
@@ -96,8 +96,8 @@ class AdminService {
                 {
 
                     conn.query("select *from user where email = ? and role=1", [email], (err, result) => {
-                        console.log("users=>", result);
-                        console.log(err);
+                        // console.log("users=>", result);
+                        // console.log(err);
                         conn.release();
                         
                         if (err) reject(err);

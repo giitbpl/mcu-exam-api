@@ -5,41 +5,24 @@ const dotenv = require('dotenv');
 const fs = require("fs");
 // var requestIp = require('request-ip');
 const fileUpload = require('express-fileupload');
-
+const logger=require("./lib/logger");
 // const pino = require('pino-http')()
-const winston = require("winston");
-dotenv.config();
-const path = process.env.LOG_DIR;
-const logger = winston.createLogger({
-    level: 'info',
-    transports: [
-        new winston.transports.File({ filename: path + "/info.log", level: "info" }),
-        new winston.transports.File({ filename: path + "/error.log", level: "error" }),
 
-    ],
-    format: winston.format.combine(
-        // winston.format.timestamp({
-        //     format: "dd-MM-yy HH:mm:ss"
-        // }),
-        winston.format.timestamp({
-            format: "DD-MM-YYYY HH:mm:ss"
-        }), // adds a timestamp property
-        winston.format.json()
-    )
-});
+
+dotenv.config();
 // app.use(cors({
-//     origin: "*"
+    //     origin: "*"
 // }));
 app.use(require("cors")());
 app.use(fileUpload());
 
 // app.use(pino);
 app.use(function (req, res, next) {
-    let output = {
+    let output = [{
         "method": req.method,
         "url": req.url,
         "ip": req.ip
-    };
+    }];
     logger.info(output);
     // console.log(requestIp.getClientIp(req));
     next();
@@ -48,7 +31,11 @@ app.use(express.json());
 app.listen(process.env.PORT, (err) => {
     if (err) throw err;
     console.log("running =" + process.env.PORT);
-
+    let output = {
+       "error":"server error",
+       "message":"server restarted"
+    };
+    logger.error(output);
     // If current directory does not exist
     // then create it
     // fs.mkdir(path, (error) => {
@@ -63,6 +50,8 @@ app.listen(process.env.PORT, (err) => {
 });
 app.use("/admin", require("./routes/admin"));
 app.use("/import", require("./routes/import"));
+app.use("/export", require("./routes/export"));
+app.use("/logs", require("./routes/logs"));
 app.get('/', (req, res) => {
     res.json({
         "error": "true",

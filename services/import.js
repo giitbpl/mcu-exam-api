@@ -39,7 +39,7 @@ class ImportService {
                 // const conn= await  connection.getConnection();
                 // console.log("inside connection");
                 connection.getConnection((error, conn) => {
-                    console.log(error);
+                    // console.log(error);
                     let flag = false;
                     // for (let i = 0; i < sheetdata.length; i++) {
 

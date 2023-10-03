@@ -6,15 +6,18 @@ const crypto = require('crypto');
 const adminservice=require("../services/AdminService");
 // const classTransformer = require('class-transformer');
 const  UserModel  = require("../models/UserModel");
+const jwt = require("../services/JwtToken");
 
 route.post('/login',(req,res) =>{
         let user = req.body.email;
         let pwd = req.body.pwd;
         adminservice.login(user,pwd).then(result=>{
             console.log("user found=>",result);
+            let token = jwt.getNewToken({ "email": req.body.email }, process.env.JWT_SECRET_TOKEN);
+
             res.status(200).json({
                 "error":"false",
-                "data":result,
+                "token":token,
                 "message":"success"
 
             });
