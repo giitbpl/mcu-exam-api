@@ -55,7 +55,8 @@ app.use("/logs", require("./routes/logs"));
 app.get('/', (req, res) => {
     res.json({
         "error": "true",
-        "message": "hello"
+        "message": "hello",
+        "testings":"testings"
     });
     // var i = 1,
     //     max = 5;

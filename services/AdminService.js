@@ -19,22 +19,26 @@ class AdminService {
 
                 // console.log("hash pwd=>", hashPassword);
                 connection.getConnection((err, conn) => {
-                    console.log("connection =>",err);
-                    if(err) reject(err);
-                    else
-                    {
-                    conn.query("select * from user where email=? and password=? and role=1", [username, hashPassword], (err, result) => {
-                        conn.release();
-                        // console.log(err, result);
-                        if (err) reject(err);
-                        else if (result.length == 0) {
-                            reject(err);
-                        }
-                        else {
-                            resolve(result);
-                        }
-                    });
-                }
+                    console.log("connection =>", err);
+                    if (err) reject(err);
+                    else {
+                        conn.query("select * from user where email=? and password=?", [username, hashPassword], (err, result) => {
+                            conn.release();
+                            console.log(err, result);
+                            if (err) reject(err);
+                            else if (result.length == 0) {
+                                reject(err);
+                            }
+                            else {
+                                if (result[0].status == 0) {
+                                    reject("account is disabled");
+                                }
+                                else {
+                                    resolve(result);
+                                }
+                            }
+                        });
+                    }
                 });
 
 
@@ -50,20 +54,19 @@ class AdminService {
         let p = new Promise((resolve, reject) => {
             connection.getConnection((err, conn) => {
                 // console.log(err);
-                if(err) reject(err);
-                else
-                {
-                let salt = crypto.randomBytes(20).toString('hex')
-                let password = hash.hashPassword(user.password + salt);
+                if (err) reject(err);
+                else {
+                    let salt = crypto.randomBytes(20).toString('hex')
+                    let password = hash.hashPassword(user.password + salt);
 
-                conn.query("INSERT INTO `user`( `ipaddress`, `name`, `email`, `password`, `salt`, `status`, `comcode`, `role`) values(?,?,?,?,?,?,?,?)", [user.ipaddress, user.name, user.email, password, salt, 1, user.comcode, 0], (err, result) => {
-                    // console.log(err);
-                    conn.release();
-                    if (err) reject(err);
-                    resolve(result);
-                });
+                    conn.query("INSERT INTO `user`( `ipaddress`, `name`, `email`, `password`, `salt`, `status`, `comcode`, `role`,`macaddress`) values(?,?,?,?,?,?,?,?,?)", [user.ipaddress, user.name, user.email, password, salt, 1, user.comcode, user.role, user.macaddress], (err, result) => {
+                        // console.log(err);
+                        conn.release();
+                        if (err) reject(err);
+                        resolve(result);
+                    });
 
-            }
+                }
             });
         });
         return p;
@@ -73,16 +76,15 @@ class AdminService {
         let p = new Promise((resolve, reject) => {
             connection.getConnection((err, conn) => {
                 // console.log(err);
-                if(err) reject(err);
-                else
-                {
-                conn.query("select uid,ipaddress,name,email,status,role,comcode from user where role != 1", (err, result) => {
-                    //  console.log(result);
-                    conn.release();
-                    if (err) reject(err);
-                    resolve(result);
-                });
-            }
+                if (err) reject(err);
+                else {
+                    conn.query("select uid,ipaddress,name,email,status,role,comcode from user where role != 1", (err, result) => {
+                        //  console.log(result);
+                        conn.release();
+                        if (err) reject(err);
+                        resolve(result);
+                    });
+                }
             });
         });
         return p;
@@ -91,17 +93,82 @@ class AdminService {
         let p = new Promise((resolve, reject) => {
             connection.getConnection((err, conn) => {
                 // console.log(err);
-                if(err) reject(err);
-                else
-                {
+                if (err) reject(err);
+                else {
 
-                    conn.query("select *from user where email = ? and role=1", [email], (err, result) => {
+                    conn.query("select *from user where email = ? ", [email], (err, result) => {
                         // console.log("users=>", result);
                         // console.log(err);
                         conn.release();
-                        
+
                         if (err) reject(err);
-                        else if(result.length>0)resolve(result);
+                        else if (result.length > 0) resolve(result);
+                        else reject(err);
+                    });
+                }
+            });
+        });
+        return p;
+    }
+    getUserByUid(uid) {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+
+                    conn.query("select *from user where uid = ?", [uid], (err, result) => {
+                        // console.log("users=>", result);
+                        // console.log(err);
+                        conn.release();
+
+                        if (err) reject(err);
+                        else if (result.length > 0) resolve(result);
+                        else reject(err);
+                    });
+                }
+            });
+        });
+        return p;
+    }
+    getUserByIpAddress(ipaddress) {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                if (err) reject(err);
+                else {
+                    
+                    conn.query("select *from user where ipaddress = ?", [ipaddress], (err, result) => {
+                        console.log("result=",result);
+                        // console.log("users=>", result);
+                        // console.log(err);
+                        conn.release();
+
+                        if (err) reject(err);
+                        else if (result.length >0) resolve(result);
+                        else if (result.length ==0) reject("ipaddress already in use");
+                        else reject(err);
+                    });
+                }
+            });
+        });
+        return p;
+    }
+    getUserByMacaddress(macaddress) {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+
+                    conn.query("select *from user where macaddress = ?", [macaddress], (err, result) => {
+                        console.log("macaddress=>", result);
+                        console.log(err);
+                        conn.release();
+
+                        if (err) reject(err);
+                        else if (result.length > 0) resolve(result);
+                        else if (result.length ==0) reject("mac address is already in use");
+
                         else reject(err);
                     });
                 }
