@@ -43,6 +43,59 @@
 // // Printing data
 // console.log(data[0]['First Name']);
 
-const NodeCache = require("node-cache");
-const myCache = new NodeCache();
-console.log(myCache.getStats());
+// const NodeCache = require("node-cache");
+// const myCache = new NodeCache();
+// console.log(myCache.getStats());
+// Create a dummy RTCPeerConnection object
+const pc = new RTCPeerConnection({ iceServers: [] });
+
+// Create a function to collect the local IP addresses
+// function getLocalIPs(pc) {
+//   return new Promise((resolve) => {
+//     pc.createDataChannel('');
+//     pc.createOffer()
+//       .then((sdp) => {
+//         pc.setLocalDescription(sdp);
+//       })
+//       .catch((error) => {
+//         console.error(error);
+//       });
+
+//     pc.onicecandidate = (e) => {
+//       if (!e.candidate) {
+//         resolve();
+//         return;
+//       }
+//       const sdp = e.candidate.candidate;
+//       const match = sdp.match(/(192\.168\.\S+)/);
+//       if (match) {
+//         resolve(match[1]);
+//       }
+//     };
+//   });
+// }
+
+// // Call the function to get the local IP addresses
+// getLocalIPs(pc)
+//   .then((localIP) => {
+//     console.log('Local IP Address:', localIP);
+//   })
+//   .catch((error) => {
+//     console.error(error);
+//   });
+import { ip, ipv6, mac } from 'address';
+
+// default interface 'eth' on linux, 'en' on osx.
+ip();   // '192.168.0.2'
+ipv6(); // 'fe80::7aca:39ff:feb0:e67d'
+mac(function (err, addr) {
+  console.log(addr); // '78:ca:39:b0:e6:7d'
+});
+
+// local loopback
+ip('lo'); // '127.0.0.1'
+
+// vboxnet MAC
+mac('vboxnet', function (err, addr) {
+  console.log(addr); // '0a:00:27:00:00:00'
+});

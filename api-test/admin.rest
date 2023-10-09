@@ -54,3 +54,14 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/admin/getuserbyuid/17 HTTP/1.1
+
+###
+POST http://localhost:3000/admin/token HTTP/1.1
+Content-Type: application/json
+
+{
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsInJvbGUiOjEsImlhdCI6MTY5NjY4NDU0NX0.6zymO62N75U6VYSuDFN1xdeHkVxDttZ9z-SJg52Bwgg"
+}
+
+###
+GET http://localhost:3000/admin/getip

@@ -7,13 +7,14 @@ const adminservice = require("../services/AdminService");
 // const classTransformer = require('class-transformer');
 const UserModel = require("../models/UserModel");
 const jwt = require("../services/JwtToken");
+// const JwtToken = require("../services/JwtToken");
 
 route.post('/login', (req, res) => {
     let user = req.body.email;
     let pwd = req.body.pwd;
     adminservice.login(user, pwd).then(result => {
         console.log("user found=>", result);
-        let token = jwt.getNewToken({ "email": req.body.email }, process.env.JWT_SECRET_TOKEN);
+        let token = jwt.getNewToken({ "email": req.body.email,"role":result[0].role,"uid":result[0].uid }, process.env.JWT_SECRET_TOKEN);
 
         res.status(200).json({
             "error": "false",
@@ -164,6 +165,23 @@ route.get('/getuserbyuid/:uid', (req, res) => {
             // "data":response
             "message": err
         });
+    });
+});
+route.post("/token", (req, res) => {
+    res.json({
+        "error":"false",
+        "data":jwt.verify(req.body.token,process.env.JWT_SECRET_TOKEN)
+    });
+    // return jwt.verify(req.body.token,process.env.JWT_SECRET_TOKEN);
+});
+route.get('/getip',(req,res) => {
+    const clientIP = req.ip;
+    res.setHeader('ClientIP', clientIP);
+    // res.status(200).send();
+    res.json({
+        "error":"false",
+        "message":"success",
+        "clientip":clientIP
     });
 });
 

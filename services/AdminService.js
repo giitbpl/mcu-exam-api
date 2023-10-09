@@ -27,7 +27,7 @@ class AdminService {
                             console.log(err, result);
                             if (err) reject(err);
                             else if (result.length == 0) {
-                                reject(err);
+                                reject("invalid username or password");
                             }
                             else {
                                 if (result[0].status == 0) {
@@ -170,6 +170,27 @@ class AdminService {
                         else if (result.length ==0) reject("mac address is already in use");
 
                         else reject(err);
+                    });
+                }
+            });
+        });
+        return p;
+    }
+    getallIpAddress()
+    {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+
+                    conn.query("select ipaddress  from user", (err, result) => {
+                        // console.log("macaddress=>", result);
+                        console.log(err);
+                        conn.release();
+
+                        if (err) reject(err);
+                        else resolve(result);
                     });
                 }
             });
