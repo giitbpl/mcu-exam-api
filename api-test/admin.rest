@@ -8,7 +8,7 @@ Content-Type: application/json
 
 {
     "email":"admin@admin.com",
-    "pwd":"12345"
+    "pwd":"123458"
 }
 
 ####

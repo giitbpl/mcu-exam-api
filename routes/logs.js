@@ -15,4 +15,5 @@ route.get("/info/all", (req, res) => {
 
 
 });
+// route
 module.exports = route;
