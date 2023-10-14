@@ -15,5 +15,20 @@ route.get("/info/all", (req, res) => {
 
 
 });
+route.get("/all", (req, res)=>{
+    logService.getAllLOgs().then(response => {
+        res.json({
+            "error":"false",
+            "message":"success",
+            "data": response
+        });
+    }).catch(err => {
+        res.json({
+            "error":"true",
+            "message":"error",
+            // "data": response
+        });
+    });
+});
 // route
 module.exports = route;

@@ -11,7 +11,8 @@ const adminservice = require('./services/AdminService');
 var morgan = require('morgan');
 const { stream } = require('winston');
 const json = require('morgan-json');
-
+const logservice=require("./services/logService");
+const { error } = require('console');
 // const pino = require('pino-http')()
 
 
@@ -24,15 +25,15 @@ app.use(fileUpload());
 app.use(express.json());
 morgan.token('ip', function (req, res) { return req.ip })
 morgan.token('uid', function (req, res) {
-    console.log("auth=>", req.headers.authorization);
-    if (req.headers.authorization != undefined && req.headers.authorization.length > 0) {
-        token = JwtToken.verify(req.headers.authorization, process.env.JWT_SECRET_TOKEN);
-        return token.uid;
+    // console.log("auth=>", req.headers.authorization);
+    // if (req.headers.authorization != undefined && req.headers.authorization.length > 0) {
+    //     token = JwtToken.verify(req.headers.authorization, process.env.JWT_SECRET_TOKEN);
+    //     return token.uid;
 
-    }
-    else {
-        return 0;
-    }
+    // }
+    // else {
+    //     return 0;
+    // }
 })
 const format = json({
     method: ':method',
@@ -102,20 +103,32 @@ const format = json({
 
 app.use(function (req, res, next) {
     // let token = "";
+    console.log("auth=>", req.headers.authorization.length);
+    console.log(req.url);
+    let token="";
     // // console.log("header=>", req.headers.authorization.length != 0);
-    // if (req.headers.authorization != undefined) {
-    //     token = JwtToken.verify(req.headers.authorization, process.env.JWT_SECRET_TOKEN);
+    if (req.headers.authorization.length>6 ) {
+        // if (typeof bearerHeader !== 'undefined') {
+          let reqtoken=  req.headers.authorization.split(" ");
+          console.log("request token", reqtoken);
+        token = JwtToken.verify(reqtoken[1], process.env.JWT_SECRET_TOKEN);
 
-    // }
+    }
 
-    // let output = [{
-    //     "method": req.method,
-    //     "url": req.url,
-    //     "ip": req.ip,
-    //     "userid": (token === "") ? 0 : token.uid
-    // }];
+    let output = {
+        "method": req.method,
+        "url": req.url,
+        "ip": req.ip,
+        "uid": (token === "") ? 0 : token.uid,
+        "status":res.statusCode,
+    };
     // logger.info(output);
     // console.log(requestIp.getClientIp(req));
+    logservice.save(output).then(function (response) {
+        console.log("save", response);
+    }).catch(err=>{
+        console.log("error=>",err);
+    });
     next();
 });
 

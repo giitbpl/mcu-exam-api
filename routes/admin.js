@@ -8,6 +8,19 @@ const adminservice = require("../services/AdminService");
 const UserModel = require("../models/UserModel");
 const jwt = require("../services/JwtToken");
 // const JwtToken = require("../services/JwtToken");
+route.get("/logout", (req, res) => {
+adminservice.logout().then((data) => {
+    res.send({
+        "error":"false",
+        "message":"success"
+    });
+}).catch((error) => {
+    res.send({
+        "error":"true",
+        "message":"error"
+    });
+});
+});
 
 route.post('/login', (req, res) => {
     let user = req.body.email;

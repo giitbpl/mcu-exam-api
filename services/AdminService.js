@@ -4,10 +4,32 @@ const connection = require("../db/connection");
 // const { use } = require("../routes/admin");
 var crypto = require('crypto');
 const Hashing = require("../utilites/Hashing");
+const moment=require('moment');
 
 // const { head } = require("../routes/admin");
 class AdminService {
+    logout()
+    {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+                    // let salt = crypto.randomBytes(20).toString('hex')
+                    // let password = hash.hashPassword(user.password + salt);
 
+                    conn.query("update INTO `user` set lastlogin=?", [moment().format('YYYY-MM-DD HH:mm:ss')], (err, result) => {
+                        // console.log(err);
+                        conn.release();
+                        if (err) reject(err);
+                        resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
     login(username, password) {
         let p = new Promise((resolve, reject) => {
             this.getUserByEmail(username).then(data => {
@@ -23,7 +45,7 @@ class AdminService {
                     if (err) reject(err);
                     else {
                         conn.query("select * from user where email=? and password=?", [username, hashPassword], (err, result) => {
-                            conn.release();
+                           
                             console.log(err, result);
                             if (err) reject(err);
                             else if (result.length == 0) {
@@ -34,6 +56,11 @@ class AdminService {
                                     reject("account is disabled");
                                 }
                                 else {
+                                    conn.query("update`user` set lastlogin=? where uid=?", [moment().format('YYYY-MM-DD HH:mm:ss'),result[0].uid], (err1, data) => {
+                                        console.log("last login = ",data);
+                                        console.log("last login error = ",err1);
+                                    });
+                                    conn.release();
                                     resolve(result);
                                 }
                             }
