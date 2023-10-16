@@ -30,16 +30,15 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/admin/register HTTP/1.1
 Content-Type: application/json
+Authorization: "Bearer "
 
 {
-    
-    "ipaddress":"192.168.1.8",
+    "ipaddress":"127.0.0.1",
     "macaddress":"00:1B:44:11:3A:22",
     "name":"user1",
-    "email":"user9@admin.com",
-    "password":"12345",
-    "salt":"",
-    "status":"1",
+    "email":"giitbpl@gmail.com",
+    "pwd":"India@1234",
+     "status":"1",
     "comcode":"asdaadasd",
     "role":1
 }
@@ -65,3 +64,6 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/admin/getip
+
+###
+POST http://localhost:3000/admin/chpwd HTTP/1.1

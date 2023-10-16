@@ -13,7 +13,7 @@ class JwtToken {
     }
     verify(token, secretkey) {
         return Jwt.verify(token, secretkey);
-
+        
     }
 }
 module.exports = new JwtToken();

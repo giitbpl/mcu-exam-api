@@ -5,14 +5,14 @@ const dotenv = require('dotenv');
 const fs = require("fs");
 // var requestIp = require('request-ip');
 const fileUpload = require('express-fileupload');
-const logger = require("./lib/logger");
+// const logger = require("./lib/logger");
 const JwtToken = require('./services/JwtToken');
 const adminservice = require('./services/AdminService');
-var morgan = require('morgan');
-const { stream } = require('winston');
-const json = require('morgan-json');
-const logservice=require("./services/logService");
-const { error } = require('console');
+// var morgan = require('morgan');
+// const { stream } = require('winston');
+// const json = require('morgan-json');
+const logservice = require("./services/logService");
+// const { error } = require('console');
 // const pino = require('pino-http')()
 
 
@@ -23,8 +23,8 @@ dotenv.config();
 app.use(require("cors")());
 app.use(fileUpload());
 app.use(express.json());
-morgan.token('ip', function (req, res) { return req.ip })
-morgan.token('uid', function (req, res) {
+// morgan.token('ip', function (req, res) { return req.ip })
+// morgan.token('uid', function (req, res) {
     // console.log("auth=>", req.headers.authorization);
     // if (req.headers.authorization != undefined && req.headers.authorization.length > 0) {
     //     token = JwtToken.verify(req.headers.authorization, process.env.JWT_SECRET_TOKEN);
@@ -34,43 +34,24 @@ morgan.token('uid', function (req, res) {
     // else {
     //     return 0;
     // }
-})
-const format = json({
-    method: ':method',
-    url:":url",
-    status:":status",
-    ip:":ip",
-    uid:":uid",
-    // length: ':res[content-length]',
-    // 'response-time': ':response-time ms'
-  });
+// })
+// const format = json({
+//     method: ':method',
+//     url: ":url",
+//     status: ":status",
+//     ip: ":ip",
+//     uid: ":uid",
+//     // length: ':res[content-length]',
+//     // 'response-time': ':response-time ms'
+// });
 
-  app.use(morgan(format,{
-        stream: fs.createWriteStream('./logs/access.log', { flags: 'a' })
+// app.use(morgan(format, {
+//     stream: fs.createWriteStream('./logs/access.log', { flags: 'a' })
 
-  }));
-// app.use(morgan(function (tokens, req, res) {
-
-//     return [
-//         // tokens.remote-addr,
-//         '{"ip":"' + tokens.ip(req, res) + '"',
-//         '"uid":"' + tokens.uid(req, res) + '"',
-//         '"method":"' + tokens.method(req, res) + '"',
-//         '"url":"' + tokens.url(req, res) + '"',
-//         '"status":"' + tokens.status(req, res) + '"',
-//         //   ""clength":""+tokens.res(req, res, "content-length"), "-",
-//         //   "tokens["response-time"](req, res), "ms",
-//         '"time":"' + new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() + '"}'
+// }));
 
 
-//     ].join(',')
-// }, {
 
-//     stream: fs.createWriteStream('./logs/access.json', { flags: 'a' })
-// }
-// ));
-
-// app.use(pino);
 // app.use((req, res, next) => {
 //     let validip=false;
 //     adminservice.getallIpAddress().then(ipaddress => {
@@ -103,33 +84,92 @@ const format = json({
 
 app.use(function (req, res, next) {
     // let token = "";
-    console.log("auth=>", req.headers.authorization.length);
-    console.log(req.url);
-    let token="";
+    console.log("auth=>", req.headers.authorization);
+    // console.log(req.url);
+    let token = "";
     // // console.log("header=>", req.headers.authorization.length != 0);
-    if (req.headers.authorization.length>6 ) {
+    if(req.headers.authorization==undefined) {
+        res.status(400).send("Invalid request");
+        let output = {
+            "method": req.method,
+            "url": req.url,
+            "ip": req.ip,
+            "uid": (token === "") ? 0 : token.uid,
+            "status": res.statusCode,
+        };
+        // logger.info(output);
+        // console.log(requestIp.getClientIp(req));
+        logservice.save(output).then(function (response) {
+            // console.log("save", response);
+        }).catch(err => {
+            console.log("error=>", err);
+        });
+        return
+    }
+    if (req.headers.authorization.length > 6) {
         // if (typeof bearerHeader !== 'undefined') {
-          let reqtoken=  req.headers.authorization.split(" ");
+        let reqtoken = req.headers.authorization.split(" ");
           console.log("request token", reqtoken);
         token = JwtToken.verify(reqtoken[1], process.env.JWT_SECRET_TOKEN);
-
+        console.log("t=>",token);
+        adminservice.getUserByUid(token.uid).then(data=>{
+            req.body.uid = token.uid;
+            // console.log(data);
+            let output = {
+                "method": req.method,
+                "url": req.url,
+                "ip": req.ip,
+                "uid": (token === "") ? 0 : token.uid,
+                "status": res.statusCode,
+            };
+            // logger.info(output);
+            // console.log(requestIp.getClientIp(req));
+            logservice.save(output).then(function (response) {
+                // console.log("save", response);
+            }).catch(err => {
+                console.log("error=>", err);
+            });
+            next();
+        }).catch(err=>{
+            // console.log(err);
+            res.json({
+                "error": "true",
+                "message":"invalid request"
+            });
+            // return;
+        });
+    }
+    else if (req.headers.authorization.length == 6  && req.url=="/admin/login")
+    {
+        let output = {
+            "method": req.method,
+            "url": req.url,
+            "ip": req.ip,
+            "uid": (token === "") ? 0 : token.uid,
+            "status": res.statusCode,
+        };
+        // logger.info(output);
+        // console.log(requestIp.getClientIp(req));
+        logservice.save(output).then(function (response) {
+            // console.log("save", response);
+        }).catch(err => {
+            console.log("error=>", err);
+        });
+        next();
+    }
+    else
+    {
+        res.json({
+            "error": "true",
+            "message": "invalid request",
+            
+        });
     }
 
-    let output = {
-        "method": req.method,
-        "url": req.url,
-        "ip": req.ip,
-        "uid": (token === "") ? 0 : token.uid,
-        "status":res.statusCode,
-    };
-    // logger.info(output);
-    // console.log(requestIp.getClientIp(req));
-    logservice.save(output).then(function (response) {
-        console.log("save", response);
-    }).catch(err=>{
-        console.log("error=>",err);
-    });
-    next();
+
+
+
+    // next();
 });
 
 app.listen(process.env.PORT, '0.0.0.0', (err) => {

@@ -32,16 +32,22 @@ class AdminService {
     }
     login(username, password) {
         let p = new Promise((resolve, reject) => {
-            this.getUserByEmail(username).then(data => {
-                // console.log("data=", data);
+            this.getUserByEmail(username).then( data => {
+                console.log("user detail=>",data);
+                console.log("salt=", data[0].salt);
+                console.log("password=>",password);
                 let salt = data[0].salt;
 
-                let hashPassword = hash.hashPassword(password + salt);
+                let hashPassword =  hash.hashPassword(password + salt);
+                // console.log(hashPassword);
+                // if(hashPassword ==false)
+                // {
+                //     reject("password not matching")
+                // }
 
-
-                // console.log("hash pwd=>", hashPassword);
+                console.log("hash pwd=>", hashPassword);
                 connection.getConnection((err, conn) => {
-                    console.log("connection =>", err);
+                    // console.log("connection =>", err);
                     if (err) reject(err);
                     else {
                         conn.query("select * from user where email=? and password=?", [username, hashPassword], (err, result) => {
@@ -57,8 +63,8 @@ class AdminService {
                                 }
                                 else {
                                     conn.query("update`user` set lastlogin=? where uid=?", [moment().format('YYYY-MM-DD HH:mm:ss'),result[0].uid], (err1, data) => {
-                                        console.log("last login = ",data);
-                                        console.log("last login error = ",err1);
+                                        // console.log("last login = ",data);
+                                        // console.log("last login error = ",err1);
                                     });
                                     conn.release();
                                     resolve(result);
@@ -80,11 +86,11 @@ class AdminService {
     register(user) {
         let p = new Promise((resolve, reject) => {
             connection.getConnection((err, conn) => {
-                // console.log(err);
+                console.log("requested user detail=>",user);
                 if (err) reject(err);
                 else {
                     let salt = crypto.randomBytes(20).toString('hex')
-                    let password = hash.hashPassword(user.password + salt);
+                    let password = hash.hashPassword(user.pwd + salt);
 
                     conn.query("INSERT INTO `user`( `ipaddress`, `name`, `email`, `password`, `salt`, `status`, `comcode`, `role`,`macaddress`) values(?,?,?,?,?,?,?,?,?)", [user.ipaddress, user.name, user.email, password, salt, 1, user.comcode, user.role, user.macaddress], (err, result) => {
                         // console.log(err);
@@ -123,14 +129,14 @@ class AdminService {
                 if (err) reject(err);
                 else {
 
-                    conn.query("select *from user where email = ? ", [email], (err, result) => {
-                        // console.log("users=>", result);
-                        // console.log(err);
+                    conn.query("SELECT `uid`, `ipaddress`, `name`, `macaddress`, `email`, `status`, `comcode`, `role`, `lastlogin`,`salt` FROM `user` where email = ? ", [email], (err, result) => {
+                        console.log("users=>", result);
+                        console.log(err);
                         conn.release();
 
                         if (err) reject(err);
                         else if (result.length > 0) resolve(result);
-                        else reject(err);
+                        else reject("email not found");
                     });
                 }
             });
@@ -144,7 +150,7 @@ class AdminService {
                 if (err) reject(err);
                 else {
 
-                    conn.query("select *from user where uid = ?", [uid], (err, result) => {
+                    conn.query("SELECT `uid`, `ipaddress`, `name`, `macaddress`, `email`, `status`, `comcode`, `role`, `lastlogin`,`salt` FROM `user` where uid = ?", [uid], (err, result) => {
                         // console.log("users=>", result);
                         // console.log(err);
                         conn.release();
@@ -223,6 +229,10 @@ class AdminService {
             });
         });
         return p;
+    }
+    changePassword(request) {
+        console.log(request);
+
     }
 }
 module.exports = new AdminService();

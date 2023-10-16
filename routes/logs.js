@@ -30,5 +30,20 @@ route.get("/all", (req, res)=>{
         });
     });
 });
+route.post("/del",(req,res) => {
+    console.log(req.body.duration);
+    logservice.deleteLogByduration(req.body.duration).then(data=>{
+            res.json({
+                "error":"false",
+                "message":"success",
+                "data":data.affectedRows
+            });
+    }).catch(err => {
+        res.json({
+            "error":"true",
+            "message":"error",
+        });
+    });
+});
 // route
 module.exports = route;

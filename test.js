@@ -22,5 +22,13 @@
 //   }
 // });
 // console.log(realJSON);
-const moment = require('moment');
-console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
+// const moment = require('moment');
+// console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
+var crypto = require('crypto');
+const hash = require("./utilites/Hashing");
+let password = "Ftp@1234";
+let salt = "c7f3294e31afc17324e4d900a51a05f6035f80dc";
+// let salt = crypto.randomBytes(20).toString('hex')
+console.log(salt);
+console.log( hash.hashPassword(password + salt));
+

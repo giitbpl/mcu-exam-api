@@ -67,5 +67,27 @@ class LogService {
         });
         return p;
     }
+    deleteLogByduration(duration) {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+                    // let salt = crypto.randomBytes(20).toString('hex')
+                    // let password = hash.hashPassword(user.password + salt);
+
+                    conn.query("delete from activity_log where timestamp < DATE_SUB(NOW(), INTERVAL "+duration+" MONTH)", (err, result) => {
+                        console.log(err);
+                        console.log(result);
+                        conn.release(); 
+                        if (err) reject(err);
+                        resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
 }
 module.exports = new LogService();

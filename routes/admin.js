@@ -25,11 +25,12 @@ adminservice.logout().then((data) => {
 route.post('/login', (req, res) => {
     let user = req.body.email;
     let pwd = req.body.pwd;
+    // console.log(user,pwd);
     adminservice.login(user, pwd).then(result => {
-        console.log("user found=>", result);
+        // console.log("user found=>", result);
         let token = jwt.getNewToken({ "email": req.body.email,"role":result[0].role,"uid":result[0].uid }, process.env.JWT_SECRET_TOKEN);
 
-        res.status(200).json({
+        res.json({
             "error": "false",
             "token": token,
             "role": result[0].role,
@@ -38,7 +39,7 @@ route.post('/login', (req, res) => {
         });
     }).catch(err => {
         console.log("error: ", err);
-        res.status(200).json({
+        res.json({
             "error": "true",
             "message": err
             // "data":result
@@ -80,7 +81,9 @@ route.post('/register', (req, res) => {
     adminservice.register(req.body).then((response) => {
         res.json({
             "error": "false",
-            "data": response
+            "data": response,
+
+            "message": "Registration successfully"
         });
     }).catch((err) => {
         // console.log("error==>",err);
@@ -181,10 +184,21 @@ route.get('/getuserbyuid/:uid', (req, res) => {
     });
 });
 route.post("/token", (req, res) => {
-    res.json({
-        "error":"false",
-        "data":jwt.verify(req.body.token,process.env.JWT_SECRET_TOKEN)
+    let detail=jwt.verify(req.body.token,process.env.JWT_SECRET_TOKEN);
+    adminservice.getUserByUid(detail.uid).then(userdetail => {
+        res.json({
+            "error":"false",
+            "data":userdetail[0],
+            "message":"success"
+        });
+    }).catch(error =>{
+        res.json({
+            "error":"true",
+            // "data":userdetail[0],
+            "message":"fail"
+        });
     });
+  
     // return jwt.verify(req.body.token,process.env.JWT_SECRET_TOKEN);
 });
 route.get('/getip',(req,res) => {
@@ -197,5 +211,8 @@ route.get('/getip',(req,res) => {
         "clientip":clientIP
     });
 });
-
+route.post("/chpwd",(req,res) => {
+    console.log(req.body.uid);
+    adminservice.changePassword(req.body)
+});
 module.exports = route;
