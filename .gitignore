@@ -8,3 +8,4 @@
 /iisnode
 /logs
 *.log
+/api-test/*
