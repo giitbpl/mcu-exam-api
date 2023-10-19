@@ -12,24 +12,24 @@ class ImportService {
     async import(filename, sheetname, recordno) {
         let pro = new Promise(async (resolve, reject) => {
 
-            let sheetdata = await this.getSheetRows(filename, sheetname, recordno);
+            let data = await this.getSheetRows(filename, sheetname, recordno);
 
 
             // console.log("sheetdata=", sheetdata);
-            if (sheetdata == 1) {
+            if (data == 1) {
                 reject({
                     "error": "true",
                     "message": "file not found"
                 });
                 // return;
             }
-            else if (sheetdata == 2) {
+            else if (data == 2) {
                 reject({
                     "error": "true",
                     "message": "sheet not found"
                 });
             }
-            else if (sheetdata == 3) {
+            else if (data == 3) {
                 reject({
                     "error": "true",
                     "message": "out of range"
@@ -44,9 +44,24 @@ class ImportService {
                     // for (let i = 0; i < sheetdata.length; i++) {
 
                     // this.insetRecord(sheetdata.data[i], conn)
-                    conn.query("INSERT INTO `employee`(`fname`, `lname`, `gender`, `country`, `age`, `date`,`id`) VALUES (?,?,?,?,?,?,?)",
-                        [sheetdata["fname"], sheetdata["lname"], sheetdata["gender"], sheetdata["country"], sheetdata["age"], sheetdata["date"], sheetdata["id"]], (err, result) => {
-                            //   console.log(err);
+                    conn.query("INSERT INTO`master_template`(`applicationno`, `enrollno`, `rollno`, `yrtermcode`, `examcode`, `examcode2`, `examname`, `examnamempo`, `progcodempo`, `stdcent`, `stdcentname`, `examcent`, `examcentname`, `pracent`, `pracentname`, `name`, `fhname`, `hname`, `mname`, `sex`, `status`, `category`, `medium`, `mstatus`, `dob`, `subcode`, `paper`, `thobt`, `thoutof`, `thresult`, `threvised`, `probt`, `proutof`, `prresult`, `prrevised`, `intobt`, `intoutof`, `intresult`, `intrevised`, `subresult`, `semobt`, `semoutof`, `semresult`, `sempercentage`, `semdivision`, `withheld`, `graceind`, `gracecurr`, `msheetno`, `agrtotobtn`, `agrtotout`, `agrresult`, `agrpercent`, `agrdiv`, `agrremark1`, `remark1`, `remark2`, `mappingfile`, `schemefile`, `studyfile`, `examfile`, `datafilefile`, `ID`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",[
+                        data['applicationno'], data['enrollno'],     data['rollno'],      data['yrtermcode'],
+                        data['examcode'],      data['examcode2'],    data['examname'],    data['examnamempo'],
+                        data['progcodempo'],   data['stdcent'],      data['stdcentname'], data['examcent'],
+                        data['examcentname'],  data['pracent'],      data['pracentname'], data['name'],
+                        data['fhname'],        data['hname'],        data['mname'],       data['sex'],
+                        data['status'],        data['category'],     data['medium'],      data['mstatus'],
+                        data['dob'],           data['subcode'],      data['paper'],       data['thobt'],
+                        data['thoutof'],       data['thresult'],     data['threvised'],   data['probt'],
+                        data['proutof'],       data['prresult'],     data['prrevised'],   data['intobt'],
+                        data['intoutof'],      data['intresult'],    data['intrevised'],  data['subresult'],
+                        data['semobt'],        data['semoutof'],     data['semresult'],   data['sempercentage'],
+                        data['semdivision'],   data['withheld'],     data['graceind'],    data['gracecurr'],
+                        data['msheetno'],      data['agrtotobtn'],   data['agrtotout'],   data['agrresult'],
+                        data['agrpercent'],    data['agrdiv'],       data['agrremark1'],  data['remark1'],
+                        data['remark2'],       data['mappingfile'],  data['schemefile'],  data['studyfile'],
+                        data['examfile'],      data['datafilefile'], data['ID']], (err, result) => {
+                              console.log(err);
                             conn.release();
                             if (err != null) {
                                 reject({
@@ -86,8 +101,23 @@ class ImportService {
     insetRecord(data, conn) {
         let flag = false;
         // let p = new Promise((resolve, reject) => {
-        conn.query("INSERT INTO `employee`(`fname`, `lname`, `gender`, `country`, `age`, `date`,`id`) VALUES (?,?,?,?,?,?,?)",
-            [data["fname"], data["lname"], data["gender"], data["country"], data["age"], data["date"], data["id"]], (err, result) => {
+        conn.query("INSERT INTO`master_template`(`applicationno`, `enrollno`, `rollno`, `yrtermcode`, `examcode`, `examcode2`, `examname`, `examnamempo`, `progcodempo`, `stdcent`, `stdcentname`, `examcent`, `examcentname`, `pracent`, `pracentname`, `name`, `fhname`, `hname`, `mname`, `sex`, `status`, `category`, `medium`, `mstatus`, `dob`, `subcode`, `paper`, `thobt`, `thoutof`, `thresult`, `threvised`, `probt`, `proutof`, `prresult`, `prrevised`, `intobt`, `intoutof`, `intresult`, `intrevised`, `subresult`, `semobt`, `semoutof`, `semresult`, `sempercentage`, `semdivision`, `withheld`, `graceind`, `gracecurr`, `msheetno`, `agrtotobtn`, `agrtotout`, `agrresult`, `agrpercent`, `agrdiv`, `agrremark1`, `remark1`, `remark2`, `mappingfile`, `schemefile`, `studyfile`, `examfile`, `datafilefile`, `ID`) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?')",[
+        data['applicationno'], data['enrollno'],     data['rollno'],      data['yrtermcode'],
+        data['examcode'],      data['examcode2'],    data['examname'],    data['examnamempo'],
+        data['progcodempo'],   data['stdcent'],      data['stdcentname'], data['examcent'],
+        data['examcentname'],  data['pracent'],      data['pracentname'], data['name'],
+        data['fhname'],        data['hname'],        data['mname'],       data['sex'],
+        data['status'],        data['category'],     data['medium'],      data['mstatus'],
+        data['dob'],           data['subcode'],      data['paper'],       data['thobt'],
+        data['thoutof'],       data['thresult'],     data['threvised'],   data['probt'],
+        data['proutof'],       data['prresult'],     data['prrevised'],   data['intobt'],
+        data['intoutof'],      data['intresult'],    data['intrevised'],  data['subresult'],
+        data['semobt'],        data['semoutof'],     data['semresult'],   data['sempercentage'],
+        data['semdivision'],   data['withheld'],     data['graceind'],    data['gracecurr'],
+        data['msheetno'],      data['agrtotobtn'],   data['agrtotout'],   data['agrresult'],
+        data['agrpercent'],    data['agrdiv'],       data['agrremark1'],  data['remark1'],
+        data['remark2'],       data['mappingfile'],  data['schemefile'],  data['studyfile'],
+        data['examfile'],      data['datafilefile'], data['ID']], (err, result) => {
                 console.log("insert error=", err);
                 // console.log("insert result=", result);
                 if (err != null) {
@@ -165,9 +195,10 @@ class ImportService {
     verifyData(filename, sheetname, columns) {
         let pro = new Promise(async (resolve, reject) => {
             connection.getConnection((err, conn) => {
-                conn.query("SHOW COLUMNS FROM employee", (error, result) => {
-                    console.log(result.length);
-                    console.log(columns.length);
+                conn.query("SHOW COLUMNS FROM master_template", (error, result) => {
+                    // console.log(result.length);
+                    // console.log(columns.length);
+                    // Compare the database column length and.File column length.
                     if (result.length == columns.length) {
                         
                         console.log(columns);
@@ -185,13 +216,13 @@ class ImportService {
                         );
                         resolve({
                             "error": "false",
-                            "message": "structures matching"
+                            "message": "structures matched"
                         });
                     }
                     else {
                         reject({
                             "error": "true",
-                            "message": "structures not matching"
+                            "message": "structures not matched"
                         });
                     }
                 });
