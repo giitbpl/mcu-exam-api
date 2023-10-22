@@ -5,7 +5,7 @@ var fs = require('fs');
 var spawn = require('child_process').spawn;
 var mysqlDump = require('mysqldump');
 
-route.get("/backup", (req, res) => {
+route.post("/backup", (req, res) => {
     var wstream = fs.createWriteStream('dumpfilename.sql');
 
     var mysqldump = spawn('mysqldump', [
@@ -13,6 +13,7 @@ route.get("/backup", (req, res) => {
         process.env.MYSQL_USERNAME,
         '-p' + process.env.MYSQL_PASSWORD,
         process.env.MYSQL_DATABASE,
+        req.body.tablename
         // 'employee'
     ]);
 
@@ -21,7 +22,16 @@ route.get("/backup", (req, res) => {
         .pipe(wstream)
         .on('finish', function () {
             console.log('Completed');
-            res.download('dumpfilename.sql');
+            res.download('dumpfilename.sql',(err) => {
+                if(err)
+                {
+                    console.log(err);
+                }
+                else
+                {
+                    fs.unlinkSync("dumpfilename.sql");
+                }
+            });
         })
         .on('error', function (err) {
             res.json({

@@ -84,8 +84,9 @@ app.use(express.json());
 
 app.use(function (req, res, next) {
     // let token = "";
-    console.log("auth=>", req.headers.authorization);
+    // console.log("ip=>", req.headers['x-forwarded-for']);
     // console.log(req.url);
+    console.log(req.headers.authorization);
     let token = "";
     // // console.log("header=>", req.headers.authorization.length != 0);
     if(req.headers.authorization==undefined) {
@@ -93,7 +94,7 @@ app.use(function (req, res, next) {
         let output = {
             "method": req.method,
             "url": req.url,
-            "ip": req.ip,
+            "ip": (req.ip==undefined)?req.headers['x-forwarded-for']:req.ip,
             "uid": (token === "") ? 0 : token.uid,
             "status": res.statusCode,
         };
@@ -114,11 +115,12 @@ app.use(function (req, res, next) {
         console.log("t=>",token);
         adminservice.getUserByUid(token.uid).then(data=>{
             req.body.uid = token.uid;
+            // req.body.email = token.email;
             // console.log(data);
             let output = {
                 "method": req.method,
                 "url": req.url,
-                "ip": req.ip,
+                "ip": (req.ip==undefined)?req.headers['x-forwarded-for']:req.ip,
                 "uid": (token === "") ? 0 : token.uid,
                 "status": res.statusCode,
             };
@@ -141,10 +143,11 @@ app.use(function (req, res, next) {
     }
     else if (req.headers.authorization.length == 6  && req.url=="/admin/login")
     {
+        console.log(res.statusCode);
         let output = {
             "method": req.method,
             "url": req.url,
-            "ip": req.ip,
+            "ip": (req.ip==undefined)?req.headers['x-forwarded-for']:req.ip,
             "uid": (token === "") ? 0 : token.uid,
             "status": res.statusCode,
         };
@@ -196,6 +199,7 @@ app.use("/admin", require("./routes/admin"));
 app.use("/import", require("./routes/import"));
 app.use("/export", require("./routes/export"));
 app.use("/logs", require("./routes/logs"));
+app.use("/restore", require("./routes/restore"));
 
 app.get('/', (req, res) => {
     res.json({

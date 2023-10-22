@@ -3,8 +3,9 @@ GET http://localhost:3000 HTTP/1.1
 GET http://localhost:3000/admin/alluser HTTP/1.1
 
 ####
-POST http://localhost:3000/admin/login HTTP/1.1
+POST http://localhost:3001/admin/login HTTP/1.1
 Content-Type: application/json
+Authorization: "Barerr "
 
 {
     "email":"admin@admin.com",

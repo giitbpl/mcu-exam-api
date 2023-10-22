@@ -7,6 +7,8 @@ const reader = require('xlsx')
 // const hash =require("../utilites/Hashing");
 const crypto = require('crypto');
 const importService = require("../services/import");
+const e = require("express");
+const FileUpload = require("../utilites/FileUpload");
 // const adminservice=require("../services/AdminService");
 // const classTransformer = require('class-transformer');
 // const  UserModel  = require("../models/UserModel");
@@ -22,36 +24,53 @@ route.get('/getexportdir', (req, res) => {
 
 })
 route.post('/upload', function (req, res) {
-    console.log(req.files); // the uploaded file object
-    let sampleFile;
-    let uploadPath;
+    // console.log(req.files); // the uploaded file object
+    // let sampleFile;
+    // let uploadPath;
+    // if (!fs.existsSync(process.env.BACKUP_DIR)){
+    //     fs.mkdirSync(process.env.BACKUP_DIR);
+    // }
+    // if (!req.files || Object.keys(req.files).length === 0) {
+    //     return res.status(400).json({
+    //         "error": "true",
+    //         "message": "no file selected for upload"
+    //     });
+    // }
+    // sampleFile = req.files.file;
+    // uploadPath = process.env.BACKUP_DIR + '/' + sampleFile.name;
 
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).json({
-            "error": "true",
-            "message": "no file selected for upload"
+    // // Use the mv() method to place the file somewhere on your server
+    // sampleFile.mv(uploadPath, function (err) {
+    //     if (err) {
+    //         res.json({
+    //             "error": "true",
+    //             "message": "file not uploaded",
+
+    //         });
+    //     }
+    //     else {
+
+    //         res.json({
+    //             "error": "false",
+    //             "message": "file uploaded successfully",
+
+    //         });
+    //     }
+    // });
+    FileUpload.upload(req.files).then(response => {
+        console.log(response );
+        res.json({
+            "error": "false",
+            "message": response,
+
         });
-    }
-    sampleFile = req.files.file;
-    uploadPath = process.env.BACKUP_DIR + '/' + sampleFile.name;
+    }).catch(err => {
+        console.log(err);
+        res.json({
+            "error": "true",
+            "message": err,
 
-    // Use the mv() method to place the file somewhere on your server
-    sampleFile.mv(uploadPath, function (err) {
-        if (err) {
-            res.json({
-                "error": "true",
-                "message": "file not uploaded",
-
-            });
-        }
-        else {
-
-            res.json({
-                "error": "false",
-                "message": "file uploaded successfully",
-
-            });
-        }
+        });
     });
 });
 route.get('/fileslist', (req, res) => {
@@ -121,33 +140,94 @@ route.post("/import", async (req, res) => {
     let sheetname = req.body.sheetname;
     let filename = req.body.filename;
     let recordno = req.body.recordno;
+    let tablename = req.body.tablename;
     // importService.verifyData
-     importService.import(filename, sheetname, recordno).then((response) => {
+    importService.import(filename, sheetname, recordno, tablename).then((response) => {
         //  console.log("respnse=",response);
-         res.json(response);
+        res.json(response);
 
-     }).catch((err)=>{
-            //  console.log("error=",err);
-             res.json(err);
+    }).catch((err) => {
+        //  console.log("error=",err);
+        res.json(err);
 
-     });
+    });
     // .then(response=>{
     //     res.json(response);
     // }).catch(err =>{
     //    res.json(err);
     // });
 });
-route.post('/verify',(req, res)=>{
+route.post('/verify', (req, res) => {
     let sheetname = req.body.sheetname;
     let filename = req.body.filename;
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
-    const [columns] = reader.utils.sheet_to_json(file.Sheets[sheetname],{ header: 1 });
+    const [columns] = reader.utils.sheet_to_json(file.Sheets[sheetname], { header: 1 });
     console.log(columns);
-    importService.verifyData(filename,sheetname,columns).then(response=>{
+    importService.verifyData(filename, sheetname, columns).then(response => {
         res.json(response);
-    }).catch((err)=>{
+    }).catch((err) => {
         res.jsonp(err);
     });
-    
+
+});
+route.post("/createtable", (req, res) => {
+    let session_name = req.body.session;
+    let year_name = req.body.year;
+    importService.createTable(session_name + "_" + year_name).then(data => {
+        console.log(data);
+        res.json({
+            "error": "false",
+            "message": "database created successfully",
+        });
+    }).catch(err => {
+        console.log(err.errno);
+        if (err.errno === 1050) {
+            res.json({
+                "error": "true",
+                "message": "database already exists"
+            });
+        }
+        else {
+            res.json({
+                "error": "true",
+                "message": "something went wrong"
+            });
+        }
+    });
+
+});
+route.get("/getalltablesname", (req, res) => {
+    importService.getAllTableNames().then(data => {
+        let ignoredTableNames = ["user", "activity_log", "master_template"];
+        // let tables =[];
+
+        const tables = data.filter((value) => {
+            // console.log(value.Tables_in_mcuexam);
+            return !ignoredTableNames.includes(value.Tables_in_mcuexam)
+        });
+        res.json({
+            "errors": "false",
+            "messages": "success",
+            "data": tables
+        });
+        // console.log("new array=>",newArray);
+        // data.forEach(element => {
+        //     // console.log(element);
+        //     ignoredTableNames.forEach(tableName => {
+        //         if (tableName!==element)
+        //         {
+        //             tables.push(element);
+        //         }
+        //     }); 
+        //     // if()
+        // });
+        // console.log(tables);
+    }).catch((err) => {
+        res.json({
+            "errors": "true",
+            "messages": "tables not found",
+            // "data": tables
+        });
+    });
 });
 module.exports = route;

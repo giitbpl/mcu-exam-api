@@ -213,6 +213,36 @@ route.get('/getip',(req,res) => {
 });
 route.post("/chpwd",(req,res) => {
     console.log(req.body.uid);
-    adminservice.changePassword(req.body)
+    adminservice.changePassword(req.body).then((response) => {
+        res.json({
+            "error":"false",
+            "message":"success",
+        });
+    }).catch((err) =>{
+        res.json({
+            "error":"true",
+            "message":err,
+        });
+    });
 });
+route.post('/updateuser', (req, res) => {
+    adminservice.updateUser(req.body,req.body.uid).then(result=>{
+        console.log(result);
+    }).catch((err) =>{
+        console.log(err);
+    });
+});
+route.post("/changestatus", (req, res) => {
+    adminservice.changeUserStatus(req.body.userid).then(result=>{
+        res.json({
+            "error": "false",
+            "message": "status changed"
+        });
+    }).catch(err=>{
+        res.json({
+            "error": "true",
+            "message": "something went wrong"
+        });
+    });
+});    
 module.exports = route;

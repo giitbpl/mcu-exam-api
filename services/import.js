@@ -9,7 +9,7 @@ const NodeCache = require("node-cache");
 const myCache = new NodeCache();
 
 class ImportService {
-    async import(filename, sheetname, recordno) {
+    async import(filename, sheetname, recordno,tablename) {
         let pro = new Promise(async (resolve, reject) => {
 
             let data = await this.getSheetRows(filename, sheetname, recordno);
@@ -44,7 +44,7 @@ class ImportService {
                     // for (let i = 0; i < sheetdata.length; i++) {
 
                     // this.insetRecord(sheetdata.data[i], conn)
-                    conn.query("INSERT INTO`master_template`(`applicationno`, `enrollno`, `rollno`, `yrtermcode`, `examcode`, `examcode2`, `examname`, `examnamempo`, `progcodempo`, `stdcent`, `stdcentname`, `examcent`, `examcentname`, `pracent`, `pracentname`, `name`, `fhname`, `hname`, `mname`, `sex`, `status`, `category`, `medium`, `mstatus`, `dob`, `subcode`, `paper`, `thobt`, `thoutof`, `thresult`, `threvised`, `probt`, `proutof`, `prresult`, `prrevised`, `intobt`, `intoutof`, `intresult`, `intrevised`, `subresult`, `semobt`, `semoutof`, `semresult`, `sempercentage`, `semdivision`, `withheld`, `graceind`, `gracecurr`, `msheetno`, `agrtotobtn`, `agrtotout`, `agrresult`, `agrpercent`, `agrdiv`, `agrremark1`, `remark1`, `remark2`, `mappingfile`, `schemefile`, `studyfile`, `examfile`, `datafilefile`, `ID`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",[
+                    conn.query("INSERT INTO "+tablename+" (`applicationno`, `enrollno`, `rollno`, `yrtermcode`, `examcode`, `examcode2`, `examname`, `examnamempo`, `progcodempo`, `stdcent`, `stdcentname`, `examcent`, `examcentname`, `pracent`, `pracentname`, `name`, `fhname`, `hname`, `mname`, `sex`, `status`, `category`, `medium`, `mstatus`, `dob`, `subcode`, `paper`, `thobt`, `thoutof`, `thresult`, `threvised`, `probt`, `proutof`, `prresult`, `prrevised`, `intobt`, `intoutof`, `intresult`, `intrevised`, `subresult`, `semobt`, `semoutof`, `semresult`, `sempercentage`, `semdivision`, `withheld`, `graceind`, `gracecurr`, `msheetno`, `agrtotobtn`, `agrtotout`, `agrresult`, `agrpercent`, `agrdiv`, `agrremark1`, `remark1`, `remark2`, `mappingfile`, `schemefile`, `studyfile`, `examfile`, `datafilefile`, `ID`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",[
                         data['applicationno'], data['enrollno'],     data['rollno'],      data['yrtermcode'],
                         data['examcode'],      data['examcode2'],    data['examname'],    data['examnamempo'],
                         data['progcodempo'],   data['stdcent'],      data['stdcentname'], data['examcent'],
@@ -230,5 +230,48 @@ class ImportService {
         });
         return pro;
     }
+    createTable(table_name)
+    {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log("requested user detail=>",user);
+                if (err) reject(err);
+                else {
+               
+
+                    conn.query("CREATE TABLE "+table_name+" LIKE master_template;", (err, result) => {
+                        // console.log(err.code);
+                        conn.release();
+                        if (err) reject(err);
+                        resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
+    getAllTableNames() 
+        {
+            let p = new Promise((resolve, reject) => {
+                connection.getConnection((err, conn) => {
+                    // console.log("requested user detail=>",user);
+                    if (err) reject(err);
+                    else {
+                   
+    
+                        conn.query("show tables", (err, result) => {
+                            // console.log(result);
+                            // console.log(err);
+                            conn.release();
+                            if (err) reject(err);
+                            resolve(result);
+                        });
+    
+                    }
+                });
+            });
+            return p;
+        }
 }
 module.exports = new ImportService();
