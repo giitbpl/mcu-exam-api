@@ -200,6 +200,7 @@ app.use("/import", require("./routes/import"));
 app.use("/export", require("./routes/export"));
 app.use("/logs", require("./routes/logs"));
 app.use("/restore", require("./routes/restore"));
+app.use("/search", require("./routes/search"));
 
 app.get('/', (req, res) => {
     res.json({
