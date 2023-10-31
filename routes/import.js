@@ -58,7 +58,7 @@ route.post('/upload', function (req, res) {
     //     }
     // });
     FileUpload.upload(req.files).then(response => {
-        console.log(response );
+        console.log(response);
         res.json({
             "error": "false",
             "message": response,
@@ -82,6 +82,7 @@ route.get('/fileslist', (req, res) => {
     }
 
     fs.readdir(dir, (err, files) => {
+        console.log(files);
         if (err) {
             console.log('Error reading files:', err);
             res.json({
@@ -96,7 +97,7 @@ route.get('/fileslist', (req, res) => {
             // Loop over the files
             for (const file of files) {
                 // console.log(path.extname(file));
-                if (path.extname(file) == ".xlsx")
+                if (path.extname(file) == ".xlsx" || path.extname(file) == ".xls" )
                     fileslist.push(file);
             }
             res.json({
@@ -229,5 +230,40 @@ route.get("/getalltablesname", (req, res) => {
             // "data": tables
         });
     });
+});
+route.post('/analyzed', (req, res) => {
+    let sheetname = req.body.sheetname;
+    let filename = req.body.filename;
+    const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
+    const [columns] = reader.utils.sheet_to_json(file.Sheets[sheetname], { header: 1 });
+    // console.log(columns);
+
+    importService.getAllDBColumns().then(cols => {
+        let table_column=[];
+        cols.forEach(element => {
+            table_column.push(element.Field);
+                // console.log(element.Field);
+        });
+        res.json({
+            "error": "false",
+            message: "success",
+            "data": {
+                "excel_column": columns,
+                "table_column": table_column,
+            }
+        });
+    }).catch(err => {
+        res.json({
+            "error": "true",
+            "message": err
+        });
+    });
+
+    // importService.verifyData(filename, sheetname, columns).then(response => {
+    //     res.json(response);
+    // }).catch((err) => {
+    //     res.jsonp(err);
+    // });
+
 });
 module.exports = route;
