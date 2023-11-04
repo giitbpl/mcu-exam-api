@@ -26,4 +26,38 @@ route.post("/search", (req, res) => {
 
    
 });
+route.post("/getsessionnamebycoursename", (req, res) => {
+    // console.log(req.body);
+    searchService.getSessioNameByCourseCode(req.body.coursecode,req.body.envno).then((data) => {
+       res.json({
+            "error":"false",
+            "message":"success",
+            "data": data
+       });
+    }).catch((err)=>{
+        res.json({
+            "error":"true",
+            "message":"error",
+            // "data": data
+       });
+    });
+//    searchService.search(req.body).then((data) => {
+//     // console.log(data);
+//     res.json({
+//         "error":"false",
+//         "message":"success",
+//         "data": data
+//     });
+//    }).catch((err) =>{
+//     // console.log(err);
+//     res.json({
+//         "error":"true",
+//         "message":err,
+//         // "data": data
+//     });
+//    });
+
+   
+});
+
 module.exports = route;

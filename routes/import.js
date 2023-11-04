@@ -138,11 +138,12 @@ route.post("/sheetrows", (req, res) => {
     // console.log(temp.length);
 });
 route.post("/import", async (req, res) => {
+    console.log(req.body);
     let sheetname = req.body.sheetname;
     let filename = req.body.filename;
     let recordno = req.body.recordno;
     let tablename = req.body.tablename;
-    // importService.verifyData
+    importService.verifyData
     importService.import(filename, sheetname, recordno, tablename).then((response) => {
         //  console.log("respnse=",response);
         res.json(response);
@@ -159,12 +160,24 @@ route.post("/import", async (req, res) => {
     // });
 });
 route.post('/verify', (req, res) => {
-    let sheetname = req.body.sheetname;
-    let filename = req.body.filename;
+    console.log(req.body);
+    let tablename=""
+    if(req.body.type == 'resultdata')
+    {
+         tablename="master_template";
+
+    }
+    else   if(req.body.type == 'college')
+    {
+         tablename="college_master";
+
+    }
+    // let sheetname = req.body.sheetname;
+    // let filename = req.body.filename;
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
-    const [columns] = reader.utils.sheet_to_json(file.Sheets[sheetname], { header: 1 });
-    console.log(columns);
-    importService.verifyData(filename, sheetname, columns).then(response => {
+    const [columns] = reader.utils.sheet_to_json(file.Sheets[req.body.sheetname], { header: 1 });
+    console.log("file columns=>",columns);
+    importService.verifyData( columns,tablename).then(response => {
         res.json(response);
     }).catch((err) => {
         res.jsonp(err);
@@ -174,7 +187,7 @@ route.post('/verify', (req, res) => {
 route.post("/createtable", (req, res) => {
     let session_name = req.body.session;
     let year_name = req.body.year;
-    importService.createTable(session_name + "_" + year_name).then(data => {
+    importService.createTable("college_"+session_name + "_" + year_name).then(data => {
         console.log(data);
         res.json({
             "error": "false",
@@ -199,7 +212,7 @@ route.post("/createtable", (req, res) => {
 });
 route.get("/getalltablesname", (req, res) => {
     importService.getAllTableNames().then(data => {
-        let ignoredTableNames = ["user", "activity_log", "master_template"];
+        let ignoredTableNames = ["user", "activity_log", "master_template","course_master"];
         // let tables =[];
 
         const tables = data.filter((value) => {
@@ -232,13 +245,23 @@ route.get("/getalltablesname", (req, res) => {
     });
 });
 route.post('/analyzed', (req, res) => {
-    let sheetname = req.body.sheetname;
-    let filename = req.body.filename;
+    // let sheetname = req.body.sheetname;
+    // let filename = req.body.filename;
+    let tablename ="";
+    if(req.body.type=="college")
+    {
+        tablename="college_master";
+    }
+    else if(req.body.type=="resultdata")
+    {
+        tablename="master_template";
+        
+    }
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
-    const [columns] = reader.utils.sheet_to_json(file.Sheets[sheetname], { header: 1 });
+    const [columns] = reader.utils.sheet_to_json(file.Sheets[req.body.sheetname], { header: 1 });
     // console.log(columns);
 
-    importService.getAllDBColumns().then(cols => {
+    importService.getAllDBColumns(tablename).then(cols => {
         let table_column=[];
         cols.forEach(element => {
             table_column.push(element.Field);

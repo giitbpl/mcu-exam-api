@@ -201,6 +201,8 @@ app.use("/export", require("./routes/export"));
 app.use("/logs", require("./routes/logs"));
 app.use("/restore", require("./routes/restore"));
 app.use("/search", require("./routes/search"));
+app.use("/course", require("./routes/course"));
+app.use("/college", require("./routes/college"));
 
 app.get('/', (req, res) => {
     res.json({
