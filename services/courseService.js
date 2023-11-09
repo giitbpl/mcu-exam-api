@@ -13,7 +13,7 @@ class CourseService {
                 else {
 
                     conn.query("select *from course_master", (err, result) => {
-                        console.log(err, result);
+                        // console.log(err, result);
                         conn.release(); 
                         if (err) reject(err);
                         else resolve(result);
@@ -53,7 +53,7 @@ class CourseService {
                 else {
 
                     conn.query("CREATE TABLE " + "course_"+tablename + " LIKE master_template;", (err, result) => {
-                        console.log(err, result);
+                        // console.log(err, result);
                         conn.release(); 
                         if (err) reject(err);
                         else resolve(result);

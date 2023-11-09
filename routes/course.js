@@ -8,10 +8,10 @@ require("dotenv").config();
 // var mysqlDump = require('mysqldump');
 
 route.get("/all", (req, res) => {
-    console.log("GET ALL courses");
+    // console.log("GET ALL courses");
     // console.log(req.body);
     courseService.getAll().then((data) => {
-        console.log(data);
+        // console.log(data);
         res.json({
             "error": "false",
             "message": "success",

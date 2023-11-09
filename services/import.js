@@ -46,7 +46,7 @@ class ImportService {
                     // this.insetRecord(sheetdata.data[i], conn)
                     conn.query("INSERT INTO " + "course_"+ tablename + " (`applicationno`, `enrollno`, `rollno`, `yrtermcode`, `examcode`, `examcode2`, `examname`, `examnamempo`, `progcodempo`, `stdcent`, `stdcentname`, `examcent`, `examcentname`, `pracent`, `pracentname`, `name`, `fhname`, `hname`, `mname`, `sex`, `status`, `category`, `medium`, `mstatus`, `dob`, `subcode`, `paper`, `thobt`, `thoutof`, `thresult`, `threvised`, `probt`, `proutof`, `prresult`, `prrevised`, `intobt`, `intoutof`, `intresult`, `intrevised`, `subresult`, `semobt`, `semoutof`, `semresult`, `sempercentage`, `semdivision`, `withheld`, `graceind`, `gracecurr`, `msheetno`, `agrtotobtn`, `agrtotout`, `agrresult`, `agrpercent`, `agrdiv`, `agrremark1`, `remark1`, `remark2`, `mappingfile`, `schemefile`, `studyfile`, `examfile`, `datafilefile`, `ID`, `CGPA`, `SGPA`, `sub_credit`, `sub_credit_point`, `sub_grade`, `sub_grade_point`, `sub_max`, `sub_min`, `sub_total`, `total_credit`, `total_credit_point`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", [
                         data[`applicationno`], data[`enrollno`], data[`rollno`], data[`yrtermcode`], data[`examcode`], data[`examcode2`], data[`examname`], data[`examnamempo`], data[`progcodempo`], data[`stdcent`], data[`stdcentname`], data[`examcent`], data[`examcentname`], data[`pracent`], data[`pracentname`], data[`name`], data[`fhname`], data[`hname`], data[`mname`], data[`sex`], data[`status`], data[`category`], data[`medium`], data[`mstatus`], data[`dob`], data[`subcode`], data[`paper`], data[`thobt`], data[`thoutof`], data[`thresult`], data[`threvised`], data[`probt`], data[`proutof`], data[`prresult`], data[`prrevised`], data[`intobt`], data[`intoutof`], data[`intresult`], data[`intrevised`], data[`subresult`], data[`semobt`], data[`semoutof`], data[`semresult`], data[`sempercentage`], data[`semdivision`], data[`withheld`], data[`graceind`], data[`gracecurr`], data[`msheetno`], data[`agrtotobtn`], data[`agrtotout`], data[`agrresult`], data[`agrpercent`], data[`agrdiv`], data[`agrremark1`], data[`remark1`], data[`remark2`], data[`mappingfile`], data[`schemefile`], data[`studyfile`], data[`examfile`], data[`datafilefile`], data[`ID`], data[`CGPA`], data[`SGPA`], data[`sub_credit`], data[`sub_credit_point`], data[`sub_grade`], data[`sub_grade_point`], data[`sub_max`], data[`sub_min`], data[`sub_total`], data[`total_credit`], data[`total_credit_point`]], (err, result) => {
-                            console.log(err);
+                            // console.log(err);
                             conn.release();
                             if (err != null) {
                                 if (err.errno == 1054) {
@@ -151,8 +151,8 @@ class ImportService {
         let pro = new Promise(async (resolve, reject) => {
             connection.getConnection((err, conn) => {
                 conn.query("SHOW COLUMNS FROM "+tablename, (error, result) => {
-                    console.log(result.length);
-                    console.log(columns.length);
+                  //  console.log(result);
+                  //  console.log(columns);
                     // Compare the database column length and.File column length.
                     if (result.length == columns.length) {
 

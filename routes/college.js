@@ -1,5 +1,6 @@
 const express = require("express");
 const courseService = require("../services/courseService");
+const collegeService = require("../services/collegeService");
 
 const route = express.Router();
 require("dotenv").config();
@@ -27,5 +28,9 @@ route.get("/all", (req, res) => {
    });
 
    
+});
+route.post('/insert', (req, res)=>{
+    console.log(req.body);
+    // collegeService.import()
 });
 module.exports = route;

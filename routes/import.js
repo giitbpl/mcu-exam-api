@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const importService = require("../services/import");
 const e = require("express");
 const FileUpload = require("../utilites/FileUpload");
+const collegeService = require("../services/collegeService");
 // const adminservice=require("../services/AdminService");
 // const classTransformer = require('class-transformer');
 // const  UserModel  = require("../models/UserModel");
@@ -97,7 +98,7 @@ route.get('/fileslist', (req, res) => {
             // Loop over the files
             for (const file of files) {
                 // console.log(path.extname(file));
-                if (path.extname(file) == ".xlsx" || path.extname(file) == ".xls" )
+                if (path.extname(file) == ".xlsx" || path.extname(file) == ".xls")
                     fileslist.push(file);
             }
             res.json({
@@ -143,16 +144,31 @@ route.post("/import", async (req, res) => {
     let filename = req.body.filename;
     let recordno = req.body.recordno;
     let tablename = req.body.tablename;
-    importService.verifyData
-    importService.import(filename, sheetname, recordno, tablename).then((response) => {
-        //  console.log("respnse=",response);
-        res.json(response);
+    if (req.body.type == "college") {
+        collegeService.import(filename, sheetname,recordno, tablename).then((response) => {
+            //  console.log("respnse=",response);
+            res.json(response);
 
-    }).catch((err) => {
-        //  console.log("error=",err);
-        res.json(err);
+        }).catch((err) => {
+            //  console.log("error=",err);
+            res.json(err);
 
-    });
+        });
+    }
+    else {
+
+
+        // importService.v
+        importService.import(filename, sheetname, recordno, tablename).then((response) => {
+            //  console.log("respnse=",response);
+            res.json(response);
+
+        }).catch((err) => {
+            //  console.log("error=",err);
+            res.json(err);
+
+        });
+    }
     // .then(response=>{
     //     res.json(response);
     // }).catch(err =>{
@@ -160,24 +176,23 @@ route.post("/import", async (req, res) => {
     // });
 });
 route.post('/verify', (req, res) => {
-    console.log(req.body);
-    let tablename=""
-    if(req.body.type == 'resultdata')
-    {
-         tablename="master_template";
+    // console.log(req.body);
+    let tablename = ""
+    if (req.body.type == 'resultdata') {
+        tablename = "master_template";
 
     }
-    else   if(req.body.type == 'college')
-    {
-         tablename="college_master";
+    else if (req.body.type == 'college') {
+        tablename = "college_master";
 
     }
     // let sheetname = req.body.sheetname;
     // let filename = req.body.filename;
+    // console.log("table name=>",tablename);
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
     const [columns] = reader.utils.sheet_to_json(file.Sheets[req.body.sheetname], { header: 1 });
-    console.log("file columns=>",columns);
-    importService.verifyData( columns,tablename).then(response => {
+    // console.log("file columns=>",columns);
+    importService.verifyData(columns, tablename).then(response => {
         res.json(response);
     }).catch((err) => {
         res.jsonp(err);
@@ -187,7 +202,7 @@ route.post('/verify', (req, res) => {
 route.post("/createtable", (req, res) => {
     let session_name = req.body.session;
     let year_name = req.body.year;
-    importService.createTable("college_"+session_name + "_" + year_name).then(data => {
+    importService.createTable("college_" + session_name + "_" + year_name).then(data => {
         console.log(data);
         res.json({
             "error": "false",
@@ -212,7 +227,7 @@ route.post("/createtable", (req, res) => {
 });
 route.get("/getalltablesname", (req, res) => {
     importService.getAllTableNames().then(data => {
-        let ignoredTableNames = ["user", "activity_log", "master_template","course_master"];
+        let ignoredTableNames = ["user", "activity_log", "master_template", "course_master","college_master"];
         // let tables =[];
 
         const tables = data.filter((value) => {
@@ -247,25 +262,23 @@ route.get("/getalltablesname", (req, res) => {
 route.post('/analyzed', (req, res) => {
     // let sheetname = req.body.sheetname;
     // let filename = req.body.filename;
-    let tablename ="";
-    if(req.body.type=="college")
-    {
-        tablename="college_master";
+    let tablename = "";
+    if (req.body.type == "college") {
+        tablename = "college_master";
     }
-    else if(req.body.type=="resultdata")
-    {
-        tablename="master_template";
-        
+    else if (req.body.type == "resultdata") {
+        tablename = "master_template";
+
     }
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
     const [columns] = reader.utils.sheet_to_json(file.Sheets[req.body.sheetname], { header: 1 });
     // console.log(columns);
 
     importService.getAllDBColumns(tablename).then(cols => {
-        let table_column=[];
+        let table_column = [];
         cols.forEach(element => {
             table_column.push(element.Field);
-                // console.log(element.Field);
+            // console.log(element.Field);
         });
         res.json({
             "error": "false",

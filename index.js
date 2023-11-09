@@ -203,6 +203,7 @@ app.use("/restore", require("./routes/restore"));
 app.use("/search", require("./routes/search"));
 app.use("/course", require("./routes/course"));
 app.use("/college", require("./routes/college"));
+// app.use("/subject", require("./routes/subject"));
 
 app.get('/', (req, res) => {
     res.json({

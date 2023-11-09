@@ -4,44 +4,29 @@ require("dotenv").config();
 const connection = require("../db/connection");
 const courseService = require("./courseService");
 
-class SearchService
-{
-    search(data)
-    {
+class SearchService {
+    search(data) {
         console.log(data);
         let p = new Promise((resolve, reject) => {
             connection.getConnection(async (err, conn) => {
                 // console.log(err);
                 if (err) reject(err);
                 else {
-                    let tablename= await courseService.getCourseNameByCode(data.coursecode);
-                    console.log(tablename);
-                    conn.query("select *from "+tablename[0].shortname+" where enrollno=? and yrtermcode=?",[data.envno,data.session_name], (err, result) => {
-                        console.log(err, result);
-                        conn.release(); 
-                        if (err) reject(err);
-                        else resolve(result);
-                    });
+                    // let tablename= await courseService.getCourseNameByCode(data.coursecode);
+                    let tablename = "course_" + data.coursecode;
+                    let n = data.session_name.split("-");
+                    let tablename2 = "college_" + n[0].toLowerCase() + "_" + n[1];
 
-                }
-            });
-        });
-        return p;
-    }
-     async getSessioNameByCourseCode(courseCode,enrollment)  
-     {
-        
-          let p = new Promise((resolve, reject) => {
-            connection.getConnection(async (err, conn) => {
-                console.log(err);
-                if (err) reject(err);
-                else {
-                    let tablename= await courseService.getCourseNameByCode(courseCode);
-                     console.log("table name=>",tablename);
-                     console.log("request name=>",courseCode);
-                     console.log("request name=>",enrollment);
-            
-                    conn.query("select distinct yrtermcode from "+tablename[0].shortname+" where enrollno=?",[enrollment], (err, result) => {
+                    // let 
+                    // console.log(tablename);
+                    // console.log(tablename2);
+
+                    let sql = "SELECT A.*,B.`COLLEGE / CENTER NAME`,B.city,B.dist FROM " + tablename + " as A LEFT JOIN " + tablename2 + " as B on A.examcent=B.code where A.enrollno=? and A.yrtermcode=?";
+                    // let sql = "SELECT A.rollno,A.name,A.fhname,A.mname,A.enrollno,A.subcode,A.paper,A.thobt,A.thoutof,A.thresult,A.threvised,A.probt,A.proutof,A.prresult,A.prrevised,A.intobt,A.intoutof,A.intresult,A.intrevised,A.subresult,A.sub_total,A.sub_max,A.sub_min,A.sub_credit,A.sub_grade_point,A.sub_credit_point,A.sub_grade,A.semobt,A.semoutof,A.semresult,A.status,A.medium,A.category,A.msheetno,A.stdcent,A.examcent,A.semoutof,A.sub_max,A.sub_min,A.sub_grade,A.sub_grade_point,A.CGPA,A.SGPA,A.sub_total,A.total_credit,A.total_credit_point,B.`COLLEGE / CENTER NAME`,B.city,B.dist FROM " + tablename + " as A LEFT JOIN " + tablename2 + " as B on A.examcent=B.code where A.enrollno=? and A.yrtermcode=?";
+                    // let sql=`SELECT ${tablename}.rollno,${tablename}.name,${tablename}.fhname,${tablename}.mname,${tablename}.enrollno,${tablename}.status,${tablename}.medium,${tablename}.category,${tablename}.msheetno,${tablename}.stdcent,${tablename}.examcent,${tablename}.semoutof,${tablename}.sub_max,${tablename}.sub_min,${tablename}.sub_grade,${tablename}.sub_grade_point,${tablename}.CGPA,${tablename}.SGPA,${tablename}.sub_total,${tablename}.total_credit,${tablename}.total_credit_point,"${tablename2}".'COLLEGE / CENTER NAME',${tablename2}.city,${tablename2}.dist FROM ${tablename} LEFT JOIN ${tablename2} on ${tablename}.examcent=${tablename2}.code where ${tablename}.enrollno=? and ${tablename}.yrtermcode=?`;
+                    // conn.query("select *from "+tablename+" where enrollno=? and yrtermcode=?",[data.envno,data.session_name], (err, result) => {
+                    // console.log(sql);
+                    conn.query(sql, [data.envno, data.session_name], (err, result) => {
                         // console.log(err, result);
                         conn.release();
                         if (err) reject(err);
@@ -52,7 +37,62 @@ class SearchService
             });
         });
         return p;
-        }
-    
+    }
+    async getSessioNameByCourseCode(courseCode, enrollment) {
+
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection(async (err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+                    // let tablename= await courseService.getCourseNameByCode(courseCode);
+                    let tablename = "course_" + courseCode;
+                    //  console.log("table name=>",tablename);
+                    //  console.log("request name=>",courseCode);
+                    //  console.log("request name=>",enrollment);
+
+                    // conn.query("select distinct yrtermcode from "+tablename+" where enrollno=?",[enrollment], (err, result) => {
+                    conn.query("select distinct yrtermcode from " + tablename + " where enrollno=?", [enrollment], (err, result) => {
+                        // console.log(err, result);
+                        conn.release();
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
+    searchStudyCenterDetailByCode(code,session) {
+        let n = session.split("-");
+        let tablename = "college_" + n[0].toLowerCase() + "_" + n[1];
+        console.log(tablename);
+        console.log(code);
+
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection(async (err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+                    // let tablename= await courseService.getCourseNameByCode(courseCode);
+                    // let tablename = "college_" + session;
+                    //  console.log("table name=>",tablename);
+                    //  console.log("request name=>",courseCode);
+                    //  console.log("request name=>",enrollment);
+
+                    // conn.query("select distinct yrtermcode from "+tablename+" where enrollno=?",[enrollment], (err, result) => {
+                    conn.query("select code,`COLLEGE / CENTER NAME`,address,city,dist from " + tablename + " where code=?", [code], (err, result) => {
+                        console.log(err, result);
+                        conn.release();
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
 }
 module.exports = new SearchService();
