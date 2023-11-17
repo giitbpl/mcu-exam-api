@@ -100,6 +100,13 @@ route.post('/register', (req, res) => {
                 // "data":response
             });
         }
+        else  if (err.sqlMessage.search("user.email") > 0) {
+            res.json({
+                "error": "true",
+                "message": "email address is already in use"
+                // "data":response
+            });
+        }
     });
     // adminservice.getUserByEmail(req.body.email).then(data=>{
     //     res.json({
