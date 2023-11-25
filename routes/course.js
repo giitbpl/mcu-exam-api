@@ -42,4 +42,19 @@ route.post('/create', (req, res) => {
         });
     });
 });
+route.post('/coursebytype', (req, res) => {
+    courseService.getCourseNameByType(req.body.type).then((data) => {
+        res.json({
+            "error": "false",
+            "message": "success",
+            "data": data
+        });
+    }).catch((err) => {
+        res.json({
+            "error": "true",
+            "message": "failed"
+        });
+    });
+});
+
 module.exports = route;

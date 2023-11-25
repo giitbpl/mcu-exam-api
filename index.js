@@ -23,64 +23,32 @@ dotenv.config();
 app.use(require("cors")());
 app.use(fileUpload());
 app.use(express.json());
-// morgan.token('ip', function (req, res) { return req.ip })
-// morgan.token('uid', function (req, res) {
-    // console.log("auth=>", req.headers.authorization);
-    // if (req.headers.authorization != undefined && req.headers.authorization.length > 0) {
-    //     token = JwtToken.verify(req.headers.authorization, process.env.JWT_SECRET_TOKEN);
-    //     return token.uid;
 
-    // }
-    // else {
-    //     return 0;
-    // }
-// })
-// const format = json({
-//     method: ':method',
-//     url: ":url",
-//     status: ":status",
-//     ip: ":ip",
-//     uid: ":uid",
-//     // length: ':res[content-length]',
-//     // 'response-time': ':response-time ms'
-// });
+app.use((req,res,next) => {
+    // console.log(req.body);
+    console.log(req.url.search("/macaddresscheck"));
+    if(req.url.search("/macaddresscheck")>=0)
+    {
+        adminservice.getUserByMacaddress(req.query.macaddress).then(data=>{
+            res.json({
+                "error": "false",
+                "message": "Mac Address found"
+                // "data":response
+            });
+        }).catch((error) => {
+            res.json({
+                "error": "true",
+                "message": " Mac Address not found"
+                // "data":response
+            });
+        });
+    }
+    else
+    {
+        next();
 
-// app.use(morgan(format, {
-//     stream: fs.createWriteStream('./logs/access.log', { flags: 'a' })
-
-// }));
-
-
-
-// app.use((req, res, next) => {
-//     let validip=false;
-//     adminservice.getallIpAddress().then(ipaddress => {
-//         console.log("request id=",req.ip);
-//         ipaddress.forEach(element => {
-//                 console.log(element);
-//                 if(element.ipaddress == req.ip) {
-//                     validip=true;
-//                   return;
-//                 }
-
-//         });
-//         if(validip==false) {
-//             res.json({
-//                 "error": "true",
-//                 "message": "ip address of this pc is not registered",
-//                 "code": "1001" //ip address is not registered
-//             });
-//             // return;
-//         }
-//         else
-//         {
-//             next();
-//         }
-//     }).catch((err) => {
-//         console.log(err);
-//     });
-
-// });
+    }
+});
 
 app.use(function (req, res, next) {
     // let token = "";

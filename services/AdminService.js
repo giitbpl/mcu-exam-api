@@ -192,16 +192,16 @@ class AdminService {
                 if (err) reject(err);
                 else {
 
-                    conn.query("select *from user where macaddress = ?", [macaddress], (err, result) => {
-                        console.log("macaddress=>", result);
-                        console.log(err);
+                    conn.query("select *from user where macaddress = ?", [macaddress], (error, result) => {
+                        console.log("macaddress=>", result.length);
+                        console.log(error);
                         conn.release();
 
-                        if (err) reject(err);
+                        if (error) reject(error);
                         else if (result.length > 0) resolve(result);
-                        else if (result.length == 0) reject("mac address is already in use");
+                        else if (result.length == 0) reject("mac address not found");
 
-                        else reject(err);
+                       // else reject(err);
                     });
                 }
             });
@@ -217,6 +217,26 @@ class AdminService {
 
                     conn.query("select ipaddress  from user", (err, result) => {
                         // console.log("macaddress=>", result);
+                        console.log(err);
+                        conn.release();
+
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
+                }
+            });
+        });
+        return p;
+    }
+    getallMacAddress() {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+
+                    conn.query("select macaddress  from user", (err, result) => {
+                        console.log("macaddress=>", result);
                         console.log(err);
                         conn.release();
 

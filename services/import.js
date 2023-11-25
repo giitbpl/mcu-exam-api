@@ -100,25 +100,25 @@ class ImportService {
    
     getSheetRows(filename, sheetname, recordno) {
         console.log("has key=", myCache.getStats());
-        if (myCache.has('sheetdata') == true) {
+        // if (myCache.has('sheetdata') == true) {
 
-            const temp = myCache.get('sheetdata');
+        //     const temp = myCache.get('sheetdata');
 
-            const rows = myCache.get('length');
-            if (recordno >= rows) {
-                myCache.del("sheetdata");
-                myCache.del('length');
-                return 3;//out of range
-            }
-            console.log("records=", rows);
-            //    if(rows)
-            //    {
+        //     const rows = myCache.get('length');
+        //     if (recordno >= rows) {
+        //         myCache.del("sheetdata");
+        //         myCache.del('length');
+        //         return 3;//out of range
+        //     }
+        //     console.log("records=", rows);
+        //     //    if(rows)
+        //     //    {
 
-            //    }
-            // if(rows>)
-            console.log("catches rows=", temp[recordno]);
-            return temp[recordno];
-        }
+        //     //    }
+        //     // if(rows>)
+        //     console.log("catches rows=", temp[recordno]);
+        //     return temp[recordno];
+        // }
 
         // let p = new Promise((resolve, reject) => {
         const file = reader.readFile(process.env.BACKUP_DIR + "/" + filename);
@@ -134,11 +134,11 @@ class ImportService {
 
             }
             else {
-                if (recordno >= temp.length) {
-                    return 3;//out of range
-                }
-                myCache.set('sheetdata', temp);
-                myCache.set('length', temp.length);
+                // if (recordno >= temp.length) {
+                //     return 3;//out of range
+                // }
+                // myCache.set('sheetdata', temp);
+                // myCache.set('length', temp.length);
                 return temp[recordno];
             }
         }

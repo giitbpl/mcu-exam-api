@@ -17,10 +17,10 @@ route.post("/search", (req, res) => {
         "data": data
     });
    }).catch((err) =>{
-    // console.log(err);
+    console.log(err.sqlMessage);
     res.json({
         "error":"true",
-        "message":err,
+        "message":err.sqlMessage,
         // "data": data
     });
    });

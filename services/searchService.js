@@ -18,8 +18,8 @@ class SearchService {
                     let tablename2 = "college_" + n[0].toLowerCase() + "_" + n[1];
 
                     // let 
-                    // console.log(tablename);
-                    // console.log(tablename2);
+                    console.log(tablename);
+                    console.log(tablename2);
 
                     let sql = "SELECT A.*,B.`COLLEGE / CENTER NAME`,B.city,B.dist FROM " + tablename + " as A LEFT JOIN " + tablename2 + " as B on A.examcent=B.code where A.enrollno=? and A.yrtermcode=?";
                     // let sql = "SELECT A.rollno,A.name,A.fhname,A.mname,A.enrollno,A.subcode,A.paper,A.thobt,A.thoutof,A.thresult,A.threvised,A.probt,A.proutof,A.prresult,A.prrevised,A.intobt,A.intoutof,A.intresult,A.intrevised,A.subresult,A.sub_total,A.sub_max,A.sub_min,A.sub_credit,A.sub_grade_point,A.sub_credit_point,A.sub_grade,A.semobt,A.semoutof,A.semresult,A.status,A.medium,A.category,A.msheetno,A.stdcent,A.examcent,A.semoutof,A.sub_max,A.sub_min,A.sub_grade,A.sub_grade_point,A.CGPA,A.SGPA,A.sub_total,A.total_credit,A.total_credit_point,B.`COLLEGE / CENTER NAME`,B.city,B.dist FROM " + tablename + " as A LEFT JOIN " + tablename2 + " as B on A.examcent=B.code where A.enrollno=? and A.yrtermcode=?";

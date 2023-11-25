@@ -44,6 +44,26 @@ class CourseService {
         });
         return p;
     }
+    getCourseNameByType(type) {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+
+                    conn.query("select * from course_master where type=? order by code", [type], (err, result) => {
+                        // console.log(err, result);
+                        conn.release(); 
+                        resolve(result);
+                        // if (err) reject(err);
+                        // else resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
     createCourseTable(tablename)
     {
         let p = new Promise((resolve, reject) => {
