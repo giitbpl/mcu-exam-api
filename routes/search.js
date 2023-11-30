@@ -17,7 +17,7 @@ route.post("/search", (req, res) => {
         "data": data
     });
    }).catch((err) =>{
-    console.log(err.sqlMessage);
+    // console.log(err.sqlMessage);
     res.json({
         "error":"true",
         "message":err.sqlMessage,
@@ -29,18 +29,44 @@ route.post("/search", (req, res) => {
 });
 route.post("/getsessionnamebycoursename", (req, res) => {
     // console.log(req.body);
-    searchService.getSessioNameByCourseCode(req.body.coursecode,req.body.envno).then((data) => {
-       res.json({
-            "error":"false",
-            "message":"success",
-            "data": data
-       });
+    searchService.getSessioNameByCourseCode(req.body.coursecode,req.body.envno,req.body.sem).then((data) => {
+        if(data.length > 0)
+        {
+
+            res.json({
+                 "error":"false",
+                 "message":"success",
+                 "data": data
+            });
+        }
+        else
+        {
+            res.json({
+                "error":"true",
+                "message":"session not found ",
+                // "data": data
+           });
+        }
+        // console.log(data);
     }).catch((err)=>{
+        if(err.error==1146)
+        {
+            res.json({
+                "error":"true",
+                "message":err.sqlMessage,
+                // "data": data
+           });
+        }
+        else
+        {
+
         res.json({
             "error":"true",
             "message":"error",
             // "data": data
        });
+    }
+
     });
 //    searchService.search(req.body).then((data) => {
 //     // console.log(data);
