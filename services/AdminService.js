@@ -46,7 +46,7 @@ class AdminService {
 
                 console.log("hash pwd=>", hashPassword);
                 connection.getConnection((err, conn) => {
-                    // console.log("connection =>", err);
+                    console.log("connection =>", err);
                     if (err) reject(err);
                     else {
                         conn.query("select * from user where email=? and password=?", [username, hashPassword], (err, result) => {

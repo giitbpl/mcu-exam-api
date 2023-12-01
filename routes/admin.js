@@ -41,7 +41,7 @@ route.post('/login', (req, res) => {
         console.log("error: ", err);
         res.json({
             "error": "true",
-            "message": err
+            "message": err.message,
             // "data":result
 
         });

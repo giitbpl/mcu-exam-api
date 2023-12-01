@@ -13,6 +13,7 @@ const collegeService = require("../services/collegeService");
 // const adminservice=require("../services/AdminService");
 // const classTransformer = require('class-transformer');
 // const  UserModel  = require("../models/UserModel");
+const subjectService = require("../services/subjectService");
 require('dotenv').config();
 route.get('/getexportdir', (req, res) => {
     // console.log(process.env.BACKUP_DIR);
@@ -145,10 +146,19 @@ route.post("/import", async (req, res) => {
     let recordno = req.body.recordno;
     let tablename = req.body.tablename;
     if (req.body.type == "college") {
-        collegeService.import(filename, sheetname,recordno, tablename).then((response) => {
+        collegeService.import(filename, sheetname, recordno, tablename).then((response) => {
             //  console.log("respnse=",response);
             res.json(response);
 
+        }).catch((err) => {
+            //  console.log("error=",err);
+            res.json(err);
+
+        });
+    }
+    else if (req.body.type == "subject") {
+        subjectService.import(filename, sheetname, recordno, tablename).then((response) => {
+            res.json(response);
         }).catch((err) => {
             //  console.log("error=",err);
             res.json(err);
@@ -185,6 +195,9 @@ route.post('/verify', (req, res) => {
     else if (req.body.type == 'college') {
         tablename = "college_master";
 
+    }
+    else if (req.body.type == 'subject') {
+        tablename = "subject_code_master";
     }
     // let sheetname = req.body.sheetname;
     // let filename = req.body.filename;
@@ -227,7 +240,7 @@ route.post("/createtable", (req, res) => {
 });
 route.get("/getalltablesname", (req, res) => {
     importService.getAllTableNames().then(data => {
-        let ignoredTableNames = ["user", "activity_log", "master_template", "course_master","college_master"];
+        let ignoredTableNames = ["user", "activity_log", "master_template", "course_master", "college_master"];
         // let tables =[];
 
         const tables = data.filter((value) => {
