@@ -96,5 +96,31 @@ class SearchService {
         });
         return p;
     }
+    searchConsolidateResult(data) 
+    {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection(async (err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+                    // let tablename= await courseService.getCourseNameByCode(courseCode);
+                    // let tablename = "college_" + session;
+                    //  console.log("table name=>",tablename);
+                    //  console.log("request name=>",courseCode);
+                    //  console.log("request name=>",enrollment);
+                    let tablename = "course_" + data.coursecode;
+                    // conn.query("select distinct yrtermcode from "+tablename+" where enrollno=?",[enrollment], (err, result) => {
+                    conn.query("SELECT DISTINCT semobt,semoutof,semresult,examcode2,SGPA,yrtermcode FROM "+tablename+" WHERE enrollno=? ORDER by examcode2;", [data.envno], (err, result) => {
+                        // console.log(err, result);
+                        conn.release();
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
 }
 module.exports = new SearchService();

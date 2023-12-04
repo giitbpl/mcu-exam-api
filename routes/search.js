@@ -135,4 +135,19 @@ route.post('/getsubjectsdetailbycodelist', (req, res) =>{
        });
     });
 });
+route.post('/getconsolidateresult',(req, res) =>{
+    searchService.searchConsolidateResult(req.body).then(data=>{
+        res.json({
+            "error":"false",
+            "message":"success",
+            "data": data
+       });
+    }).catch((err) =>{
+        res.json({
+            "error":"true",
+            "message":"error",
+            // "data": data
+       });
+    });
+});
 module.exports = route;
