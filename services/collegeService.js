@@ -177,5 +177,52 @@ class CollegeService {
 
 
     }
+    // getSheetRows(filename, sheetname, recordno) {
+    //     console.log("has key=", myCache.getStats());
+    //     // if (myCache.has('sheetdata') == true) {
+
+    //     //     const temp = myCache.get('sheetdata');
+
+    //     //     const rows = myCache.get('length');
+    //     //     if (recordno >= rows) {
+    //     //         myCache.del("sheetdata");
+    //     //         myCache.del('length');
+    //     //         return 3;//out of range
+    //     //     }
+    //     //     console.log("records=", rows);
+    //     //     //    if(rows)
+    //     //     //    {
+
+    //     //     //    }
+    //     //     // if(rows>)
+    //     //     console.log("catches rows=", temp[recordno]);
+    //     //     return temp[recordno];
+    //     // }
+
+    //     // let p = new Promise((resolve, reject) => {
+    //     const file = reader.readFile(process.env.BACKUP_DIR + "/" + filename);
+    //     if (file == undefined) {
+    //         return 1; // file not found
+
+    //     }
+    //     else {
+    //         const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
+    //         // console.log(temp.length);
+    //         if (temp == undefined) {
+    //             return 2; //sheet not found
+
+    //         }
+    //         else {
+    //             // if (recordno >= temp.length) {
+    //             //     return 3;//out of range
+    //             // }
+    //             // myCache.set('sheetdata', temp);
+    //             // myCache.set('length', temp.length);
+    //             return temp[recordno];
+    //         }
+    //     }
+
+
+    // }
 }
 module.exports = new CollegeService();
