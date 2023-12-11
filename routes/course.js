@@ -56,5 +56,19 @@ route.post('/coursebytype', (req, res) => {
         });
     });
 });
+route.post('/getCourseNameByCode', (req, res) => {
+    courseService.getCourseNameByCode(req.body.code).then((data) => {
+        res.json({
+            "error": "false",
+            "message": "success",
+            "data": data
+        });
+    }).catch((err) => {
+        res.json({
+            "error": "true",
+            "message": "failed"
+        });
+    });
+});
 
 module.exports = route;

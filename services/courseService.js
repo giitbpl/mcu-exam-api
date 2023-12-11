@@ -31,7 +31,7 @@ class CourseService {
                 if (err) reject(err);
                 else {
 
-                    conn.query("select shortname from course_master where code=?", [code], (err, result) => {
+                    conn.query("select * from course_master where code=? ", [code], (err, result) => {
                         // console.log(err, result);
                         conn.release(); 
                         resolve(result);

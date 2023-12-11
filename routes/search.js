@@ -27,6 +27,27 @@ route.post("/search", (req, res) => {
 
    
 });
+route.post("/courseenrollment", (req, res) => {
+    // console.log(req.body);
+   searchService.searchCourseEnrollment(req.body).then((data) => {
+    // console.log(data);
+    res.json({
+        "error":"false",
+        "message":"success",
+        "data": data
+    });
+   }).catch((err) =>{
+    // console.log(err.sqlMessage);
+    res.json({
+        "error":"true",
+        "message":err.sqlMessage,
+        // "data": data
+    });
+   });
+
+   
+});
+
 route.post("/getsessionnamebycoursename", (req, res) => {
     // console.log(req.body);
     searchService.getSessioNameByCourseCode(req.body.coursecode,req.body.envno,req.body.sem).then((data) => {

@@ -110,8 +110,48 @@ class SearchService {
                     //  console.log("request name=>",enrollment);
                     let tablename = "course_" + data.coursecode;
                     // conn.query("select distinct yrtermcode from "+tablename+" where enrollno=?",[enrollment], (err, result) => {
-                    conn.query("SELECT DISTINCT semobt,semoutof,semresult,examcode2,SGPA,yrtermcode FROM "+tablename+" WHERE enrollno=? ORDER by examcode2;", [data.envno], (err, result) => {
+                    conn.query("SELECT DISTINCT semobt,semoutof,semresult,examcode2,SGPA,yrtermcode,agrtotobtn,agrtotout,CGPA,agrpercent,agrdiv   from "+tablename+" WHERE enrollno=? ORDER by examcode2;", [data.envno], (err, result) => {
                         // console.log(err, result);
+                        conn.release();
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
+    searchCourseEnrollment(data)
+    {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection(async (err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+                    // let tablename= await courseService.getCourseNameByCode(data.coursecode);
+                    let tablename = "course_" + data.coursecode;
+                    // let n = data.session_name.split("-");
+                    // let tablename2 = "college_" + n[0].toLowerCase() + "_" + n[1];
+                    // let sem=data.sem;
+
+                    // let 
+                    console.log(tablename);
+                    // console.log(tablename2);
+
+                    let sql = "SELECT A.*,B.* FROM " + tablename + " as A LEFT JOIN subject_code_master  as B on a.subcode=B.SUBJE where A.enrollno=? order by A.yrtermcode";
+                    // let sql = "SELECT A.rollno,A.name,A.fhname,A.mname,A.enrollno,A.subcode,A.paper,A.thobt,A.thoutof,A.thresult,A.threvised,A.probt,A.proutof,A.prresult,A.prrevised,A.intobt,A.intoutof,A.intresult,A.intrevised,A.subresult,A.sub_total,A.sub_max,A.sub_min,A.sub_credit,A.sub_grade_point,A.sub_credit_point,A.sub_grade,A.semobt,A.semoutof,A.semresult,A.status,A.medium,A.category,A.msheetno,A.stdcent,A.examcent,A.semoutof,A.sub_max,A.sub_min,A.sub_grade,A.sub_grade_point,A.CGPA,A.SGPA,A.sub_total,A.total_credit,A.total_credit_point,B.`COLLEGE / CENTER NAME`,B.city,B.dist FROM " + tablename + " as A LEFT JOIN " + tablename2 + " as B on A.examcent=B.code where A.enrollno=? and A.yrtermcode=?";
+                    // let sql=`SELECT ${tablename}.rollno,${tablename}.name,${tablename}.fhname,${tablename}.mname,${tablename}.enrollno,${tablename}.status,${tablename}.medium,${tablename}.category,${tablename}.msheetno,${tablename}.stdcent,${tablename}.examcent,${tablename}.semoutof,${tablename}.sub_max,${tablename}.sub_min,${tablename}.sub_grade,${tablename}.sub_grade_point,${tablename}.CGPA,${tablename}.SGPA,${tablename}.sub_total,${tablename}.total_credit,${tablename}.total_credit_point,"${tablename2}".'COLLEGE / CENTER NAME',${tablename2}.city,${tablename2}.dist FROM ${tablename} LEFT JOIN ${tablename2} on ${tablename}.examcent=${tablename2}.code where ${tablename}.enrollno=? and ${tablename}.yrtermcode=?`;
+                    // conn.query("select *from "+tablename+" where enrollno=? and yrtermcode=?",[data.envno,data.session_name], (err, result) => {
+                    // console.log(sql);
+                    conn.query(sql, [data.envno], (err, result) => {
+                        console.log(err, result);
+                    //    let res = result.reduce((r, { yrtermcode: name, ...object }) => {
+                    //         var temp = r.find(o => o.name === name);
+                    //         if (!temp) r.push(temp = { name, children: [] });
+                    //         temp.children.push(object);
+                    //         return r;
+                    //     }, []);
                         conn.release();
                         if (err) reject(err);
                         else resolve(result);

@@ -131,7 +131,7 @@ class CollegeService {
 
     }
     getSheetRows(filename, sheetname, recordno) {
-        console.log("has key=", myCache.getStats());
+        // console.log("has key=", myCache.getStats());
         if (myCache.has('sheetdata') == true) {
 
             const temp = myCache.get('sheetdata');
@@ -140,15 +140,19 @@ class CollegeService {
             if (recordno >= rows) {
                 myCache.del("sheetdata");
                 myCache.del('length');
+                myCache.flushStats();
+                myCache.flushAll();
+
                 return 3;//out of range
             }
-            console.log("records=", rows);
+            console.log("rows=", rows);
+            console.log("records=", recordno);
             //    if(rows)
             //    {
 
             //    }
             // if(rows>)
-            console.log("catches rows=", temp[recordno]);
+            // console.log("catches rows=", temp[recordno]);
             return temp[recordno];
         }
 
