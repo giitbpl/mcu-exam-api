@@ -126,18 +126,25 @@ route.post('/getsheet', (req, res) => {
             "data": sheets
         });
     }
+    
 });
-route.post("/sheetrows", (req, res) => {
-    let filename = req.body.fname;
+route.post("/sheetrows", async (req, res) => {
+    // let filename = req.body.fname;
     let sheetname = req.body.sheetname;
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.fname);
     const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
+    
+    // let excelRowsObjArr =  reader.utils.sheet_to_row_object_array(file.Sheets[sheetname]);
+    // const sheet = file.Sheets[sheetname];
+
+    // var range = reader.utils.decode_range(sheet);
+
+    // console.log("data length==>",range.e.r);
     res.json({
         "error": "false",
         "message": "success",
         "data": temp.length
     })
-    // console.log(temp.length);
 });
 route.post("/import", async (req, res) => {
     console.log(req.body);
@@ -185,8 +192,11 @@ route.post("/import", async (req, res) => {
     //    res.json(err);
     // });
 });
-route.post('/verify', (req, res) => {
-    // console.log(req.body);
+route.post('/verify', async (req, res) => {
+    // try {
+
+
+    console.log("request->", req.body);
     let tablename = ""
     if (req.body.type == 'resultdata') {
         tablename = "master_template";
@@ -202,15 +212,30 @@ route.post('/verify', (req, res) => {
     // let sheetname = req.body.sheetname;
     // let filename = req.body.filename;
     // console.log("table name=>",tablename);
-    const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
-    const [columns] = reader.utils.sheet_to_json(file.Sheets[req.body.sheetname], { header: 1 });
-    // console.log("file columns=>",columns);
-    importService.verifyData(columns, tablename).then(response => {
-        res.json(response);
-    }).catch((err) => {
-        res.jsonp(err);
-    });
+    const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename, { sheetRows: 1 });
+    // console.log("file detail=",file);
 
+    const [columns] = reader.utils.sheet_to_json(file.Sheets[req.body.sheetname], { header: 1 });
+    console.log("file columns=>", columns);
+    if (columns != undefined) {
+
+
+        importService.verifyData(columns, tablename).then(response => {
+            res.json(response);
+        }).catch((err) => {
+            res.jsonp(err);
+        });
+    }
+    else
+    {
+           res.json({
+                "error":"true",
+                "message":"file not read"
+           }); 
+    }
+    // } catch (error) {
+    //    // res.json(error)
+    // }
 });
 route.post("/createtable", (req, res) => {
     let session_name = req.body.session;
@@ -314,5 +339,53 @@ route.post('/analyzed', (req, res) => {
     //     res.jsonp(err);
     // });
 
+});
+route.post("/import2", async (req, res) => {
+    console.log(req.body);
+    let sheetname = req.body.sheetname;
+    let filename = req.body.filename;
+    let recordno = req.body.recordno;
+    let tablename = req.body.tablename;
+    if (req.body.type == "college") {
+        collegeService.import(filename, sheetname, recordno, tablename).then((response) => {
+            //  console.log("respnse=",response);
+            res.json(response);
+
+        }).catch((err) => {
+            //  console.log("error=",err);
+            res.json(err);
+
+        });
+    }
+    else if (req.body.type == "subject") {
+        subjectService.import(filename, sheetname, recordno, tablename).then((response) => {
+            res.json(response);
+        }).catch((err) => {
+            //  console.log("error=",err);
+            res.json(err);
+
+        });
+    }
+    else {
+
+        const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
+        const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
+      
+        // importService.v
+        importService.import2(temp,tablename).then((response) => {
+            //  console.log("respnse=",response);
+            res.json(response);
+
+        }).catch((err) => {
+            //  console.log("error=",err);
+            res.json(err);
+
+        });
+    }
+    // .then(response=>{
+    //     res.json(response);
+    // }).catch(err =>{
+    //    res.json(err);
+    // });
 });
 module.exports = route;
