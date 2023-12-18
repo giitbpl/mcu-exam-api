@@ -364,6 +364,6 @@ getAllDBColumns(table_name) {
     });
     return true;
 }
-afterProcess
+
 }
 module.exports = new ImportService();

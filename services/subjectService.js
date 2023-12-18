@@ -7,6 +7,7 @@ const NodeCache = require("node-cache");
 // const user = require("./user");
 require("dotenv").config();
 // const connection = require("../db/connection");
+var async = require("async");
 
 class SubjectService {
     getAll() {
@@ -19,7 +20,7 @@ class SubjectService {
 
                     conn.query("select *from subject_code_master", (err, result) => {
                         console.log(err, result);
-                        conn.release(); 
+                        conn.release();
                         if (err) reject(err);
                         else resolve(result);
                     });
@@ -29,70 +30,70 @@ class SubjectService {
         });
         return p;
     }
-   getSubjectByCodeList(codeList) {
-    console.log(codeList);
-    let p = new Promise((resolve, reject) => {
-        connection.getConnection((err, conn) => {
-            // console.log(err);
-            if (err) reject(err);
-            else {
+    getSubjectByCodeList(codeList) {
+        console.log(codeList);
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
 
-                conn.query("SELECT * FROM subject_code_master WHERE SUBJE in ("+codeList+")", (err, result) => {
-                    console.log(err, result);
-                    conn.release(); 
-                    if (err) reject(err);
-                    else resolve(result);
-                });
+                    conn.query("SELECT * FROM subject_code_master WHERE SUBJE in (" + codeList + ")", (err, result) => {
+                        // console.log(err, result);
+                        conn.release();
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
 
-            }
+                }
+            });
         });
-    });
-    return p;
-   }
-   async import(filename, sheetname, recordno, tablename) {
-    let pro = new Promise(async (resolve, reject) => {
+        return p;
+    }
+    async import(filename, sheetname, recordno, tablename) {
+        let pro = new Promise(async (resolve, reject) => {
 
-        let data = await this.getSheetRows(filename, sheetname, recordno);
-        // console.log(data);
+            let data = await this.getSheetRows(filename, sheetname, recordno);
+            // console.log(data);
 
-        // console.log("sheetdata=", sheetdata);
-        if (data == 1) {
-            reject({
-                "error": "true",
-                "message": "file not found"
-            });
-            // return;
-        }
-        else if (data == 2) {
-            reject({
-                "error": "true",
-                "message": "sheet not found"
-            });
-        }
-        else if (data == 3) {
-            reject({
-                "error": "true",
-                "message": "out of range"
-            });
-        }
-        else {
-            // const conn= await  connection.getConnection();
-            // console.log("inside connection");
-            connection.getConnection((error, conn) => {
-                // console.log(error);
-            //  console.log(data);
-            
-            // let address = data["ADDRESS"];
-            // if(address == undefined) {
-                
-            //     address = "";
-            // }
-            // console.log("address=>",address);
-             //  if(data["ADDRESS"])
-                conn.query("INSERT INTO `subject_code_master`(`EXAM_CODE`, `EXAM_NAME`, `SUBJE`, `SUBJECT_NAME`, `THEORY_MAX_MARKS`, `THEORY_MIN_MARKS`, `PRACTICAL_MAX_MARKS`, `PRACTICAL_MIN_MARKS`, `SESSIONAL_MAX_MARKS`, `SESSIONAL_MIN_MARKS`, `TOTAL_MAX_MARKS`, `TOTAL_MIN_MARKS`, `CREDIT`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", [data["EXAM_CODE"],data["EXAM_NAME"],data["SUBJE"],data["SUBJECT_NAME"],data["THEORY_MAX_MARKS"],data["THEORY_MIN_MARKS"],data["PRACTICAL_MAX_MARKS"],data["PRACTICAL_MIN_MARKS"],data["SESSIONAL_MAX_MARKS"],data["SESSIONAL_MIN_MARKS"],data["TOTAL_MAX_MARKS"],data["TOTAL_MIN_MARKS"],data["CREDIT"]], (err, result) => {
-                // conn.query("INSERT INTO " + tablename + " VALUES (?,?,?,?,?,?,?,,mull,null)", [data["CODE"],data["COLLEGE / CENTER NAME"],data["ADDRESS"],data["CITY"],data["DIST"],data["STATE"],data["PIN"]], (err, result) => {
-                        console.log(err);
-                        console.log(result);
+            // console.log("sheetdata=", sheetdata);
+            if (data == 1) {
+                reject({
+                    "error": "true",
+                    "message": "file not found"
+                });
+                // return;
+            }
+            else if (data == 2) {
+                reject({
+                    "error": "true",
+                    "message": "sheet not found"
+                });
+            }
+            else if (data == 3) {
+                reject({
+                    "error": "true",
+                    "message": "out of range"
+                });
+            }
+            else {
+                // const conn= await  connection.getConnection();
+                // console.log("inside connection");
+                connection.getConnection((error, conn) => {
+                    // console.log(error);
+                    //  console.log(data);
+
+                    // let address = data["ADDRESS"];
+                    // if(address == undefined) {
+
+                    //     address = "";
+                    // }
+                    // console.log("address=>",address);
+                    //  if(data["ADDRESS"])
+                    conn.query("INSERT INTO `subject_code_master`(`EXAM_CODE`, `EXAM_NAME`, `SUBJE`, `SUBJECT_NAME`, `THEORY_MAX_MARKS`, `THEORY_MIN_MARKS`, `PRACTICAL_MAX_MARKS`, `PRACTICAL_MIN_MARKS`, `SESSIONAL_MAX_MARKS`, `SESSIONAL_MIN_MARKS`, `TOTAL_MAX_MARKS`, `TOTAL_MIN_MARKS`, `CREDIT`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", [data["EXAM_CODE"], data["EXAM_NAME"], data["SUBJE"], data["SUBJECT_NAME"], data["THEORY_MAX_MARKS"], data["THEORY_MIN_MARKS"], data["PRACTICAL_MAX_MARKS"], data["PRACTICAL_MIN_MARKS"], data["SESSIONAL_MAX_MARKS"], data["SESSIONAL_MIN_MARKS"], data["TOTAL_MAX_MARKS"], data["TOTAL_MIN_MARKS"], data["CREDIT"]], (err, result) => {
+                        // conn.query("INSERT INTO " + tablename + " VALUES (?,?,?,?,?,?,?,,mull,null)", [data["CODE"],data["COLLEGE / CENTER NAME"],data["ADDRESS"],data["CITY"],data["DIST"],data["STATE"],data["PIN"]], (err, result) => {
+                        // console.log(err);
+                        // console.log(result);
                         conn.release();
                         if (err != null) {
                             if (err.errno == 1054) {
@@ -120,17 +121,76 @@ class SubjectService {
 
                     });
 
-              
+
+                });
+            }
+            // });
+            // });
+        });
+        return pro;
+        //end
+
+
+    }
+
+
+    import2(records, tablename) {
+        // console.log("data-length=>",data[0]);
+        console.log("tablename=>", tablename);
+        let pro = new Promise((resolve, reject) => {
+
+
+            connection.getConnection((error, conn) => {
+
+
+                async.forEachOf(records, (data, key, callback) => {
+
+                  
+                    conn.query("INSERT INTO `subject_code_master`(`EXAM_CODE`, `EXAM_NAME`, `SUBJE`, `SUBJECT_NAME`, `THEORY_MAX_MARKS`, `THEORY_MIN_MARKS`, `PRACTICAL_MAX_MARKS`, `PRACTICAL_MIN_MARKS`, `SESSIONAL_MAX_MARKS`, `SESSIONAL_MIN_MARKS`, `TOTAL_MAX_MARKS`, `TOTAL_MIN_MARKS`, `CREDIT`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", [data["EXAM_CODE"], data["EXAM_NAME"], data["SUBJE"], data["SUBJECT_NAME"], data["THEORY_MAX_MARKS"], data["THEORY_MIN_MARKS"], data["PRACTICAL_MAX_MARKS"], data["PRACTICAL_MIN_MARKS"], data["SESSIONAL_MAX_MARKS"], data["SESSIONAL_MIN_MARKS"], data["TOTAL_MAX_MARKS"], data["TOTAL_MIN_MARKS"], data["CREDIT"]], (err, result) => {
+
+                        // callback(i);
+                        console.log(key, " ", records.length);
+                        if (err) {
+                            console.log("error", err);
+                            callback("true");
+                        }
+                        if (key == (records.length - 1)) {
+                            callback("false");
+                        }
+                    });
+
+                }, err => {
+
+                    console.log("err=>", err);
+                    console.log("callback");
+                    conn.release();
+                    if (err == "false") {
+                        resolve({
+                            "error": "false",
+                            "message": records.length + " data imported successfully "
+                        });
+                    }
+                    else {
+                        reject({
+                            "error": "true",
+                            "message": err
+                        });
+                    }
+
+
+
+
+                });
+
             });
-        }
-        // });
-        // });
-    });
-    return pro;
+
+        });
+        return pro;
+    }
     //end
 
 
-}
+
 getSheetRows(filename, sheetname, recordno) {
     // console.log("has key=", myCache.getStats());
     // if (myCache.has('sheetdata') == true) {

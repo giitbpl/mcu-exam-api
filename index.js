@@ -26,7 +26,7 @@ app.use(express.json());
 
 app.use((req,res,next) => {
     // console.log(req.body);
-    console.log(req.url.search("/macaddresscheck"));
+    // console.log(req.url.search("/macaddresscheck"));
     if(req.url.search("/macaddresscheck")>=0)
     {
         adminservice.getUserByMacaddress(req.query.macaddress).then(data=>{
@@ -54,7 +54,7 @@ app.use(function (req, res, next) {
     // let token = "";
     // console.log("ip=>", req.headers['x-forwarded-for']);
     // console.log(req.url);
-    console.log(req.headers.authorization);
+    // console.log(req.headers.authorization);
     let token = "";
     // // console.log("header=>", req.headers.authorization.length != 0);
     if(req.headers.authorization==undefined) {
@@ -78,9 +78,9 @@ app.use(function (req, res, next) {
     if (req.headers.authorization.length > 6) {
         // if (typeof bearerHeader !== 'undefined') {
         let reqtoken = req.headers.authorization.split(" ");
-          console.log("request token", reqtoken);
+        //   console.log("request token", reqtoken);
         token = JwtToken.verify(reqtoken[1], process.env.JWT_SECRET_TOKEN);
-        console.log("t=>",token);
+        // console.log("t=>",token);
         adminservice.getUserByUid(token.uid).then(data=>{
             req.body.uid = token.uid;
             // req.body.email = token.email;
@@ -111,7 +111,7 @@ app.use(function (req, res, next) {
     }
     else if (req.headers.authorization.length == 6  && req.url=="/admin/login")
     {
-        console.log(res.statusCode);
+        // console.log(res.statusCode);
         let output = {
             "method": req.method,
             "url": req.url,

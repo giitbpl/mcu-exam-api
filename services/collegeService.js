@@ -5,6 +5,7 @@ const reader = require('xlsx')
 const connection = require("../db/connection");
 const NodeCache = require("node-cache");
 const myCache = new NodeCache();
+var async = require("async");
 
 class CollegeService {
     getAll() {
@@ -16,8 +17,8 @@ class CollegeService {
                 else {
 
                     conn.query("select *from course_master", (err, result) => {
-                        console.log(err, result);
-                        conn.release(); 
+                        // console.log(err, result);
+                        conn.release();
                         if (err) reject(err);
                         else resolve(result);
                     });
@@ -36,7 +37,7 @@ class CollegeService {
 
                     conn.query("select shortname from course_master where code=?", [code], (err, result) => {
                         // console.log(err, result);
-                        conn.release(); 
+                        conn.release();
                         resolve(result);
                         // if (err) reject(err);
                         // else resolve(result);
@@ -79,47 +80,47 @@ class CollegeService {
                 connection.getConnection((error, conn) => {
                     // console.log(error);
                     let flag = false;
-                //  console.log(data);
-                
-                let address = data["ADDRESS"];
-                if(address == undefined) {
-                    
-                    address = "";
-                }
-                console.log("address=>",address);
-                 //  if(data["ADDRESS"])
-                    conn.query("INSERT INTO " + tablename + " (`code`, `COLLEGE / CENTER NAME`, `address`, `city`, `dist`, `state`, `pin`) VALUES (?,?,?,?,?,?,?)", [data["CODE"],data["COLLEGE / CENTER NAME"],address.substring(0,150),data["CITY"],data["DIST"],data["STATE"],data["PIN"]], (err, result) => {
-                    // conn.query("INSERT INTO " + tablename + " VALUES (?,?,?,?,?,?,?,,mull,null)", [data["CODE"],data["COLLEGE / CENTER NAME"],data["ADDRESS"],data["CITY"],data["DIST"],data["STATE"],data["PIN"]], (err, result) => {
-                            console.log(err);
-                            console.log(result);
-                            conn.release();
-                            if (err != null) {
-                                if (err.errno == 1054) {
-                                    reject({
-                                        "error": "true",
-                                        "message": "database error"
-                                    });
-                                } else {
-                                    reject({
-                                        "error": "true",
-                                        "message": "server error"
-                                    });
-                                }
-                                // flag = true;
-                                // throw err;
-                                // return;
-                            }
-                            else {
-                                // continue;
-                                resolve({
-                                    "error": "false",
-                                    "message": "success"
+                    //  console.log(data);
+
+                    let address = data["ADDRESS"];
+                    if (address == undefined) {
+
+                        address = "";
+                    }
+                    console.log("address=>", address);
+                    //  if(data["ADDRESS"])
+                    conn.query("INSERT INTO " + tablename + " (`code`, `COLLEGE / CENTER NAME`, `address`, `city`, `dist`, `state`, `pin`) VALUES (?,?,?,?,?,?,?)", [data["CODE"], data["COLLEGE / CENTER NAME"], address.substring(0, 150), data["CITY"], data["DIST"], data["STATE"], data["PIN"]], (err, result) => {
+                        // conn.query("INSERT INTO " + tablename + " VALUES (?,?,?,?,?,?,?,,mull,null)", [data["CODE"],data["COLLEGE / CENTER NAME"],data["ADDRESS"],data["CITY"],data["DIST"],data["STATE"],data["PIN"]], (err, result) => {
+                        console.log(err);
+                        console.log(result);
+                        conn.release();
+                        if (err != null) {
+                            if (err.errno == 1054) {
+                                reject({
+                                    "error": "true",
+                                    "message": "database error"
+                                });
+                            } else {
+                                reject({
+                                    "error": "true",
+                                    "message": "server error"
                                 });
                             }
+                            // flag = true;
+                            // throw err;
+                            // return;
+                        }
+                        else {
+                            // continue;
+                            resolve({
+                                "error": "false",
+                                "message": "success"
+                            });
+                        }
 
-                        });
+                    });
 
-                  
+
                 });
             }
             // });
@@ -129,6 +130,63 @@ class CollegeService {
         //end
 
 
+    }
+    import2(records, tablename) {
+        // console.log("data-length=>",data[0]);
+        console.log("tablename=>", tablename);
+        let pro = new Promise((resolve, reject) => {
+
+
+            connection.getConnection((error, conn) => {
+
+
+                async.forEachOf(records, (data, key, callback) => {
+
+                    let address = data["ADDRESS"];
+                    if (address == undefined) {
+
+                        address = "";
+                    }
+                    conn.query("INSERT INTO " + tablename + " (`code`, `COLLEGE / CENTER NAME`, `address`, `city`, `dist`, `state`, `pin`) VALUES (?,?,?,?,?,?,?)", [data["CODE"], data["COLLEGE / CENTER NAME"], address.substring(0, 150), data["CITY"], data["DIST"], data["STATE"], data["PIN"]], (err, result) => {
+
+                        // callback(i);
+                        console.log(key, " ", records.length);
+                        if (err) {
+                            console.log("error", err);
+                            callback("true");
+                        }
+                        if (key == (records.length - 1)) {
+                            callback("false");
+                        }
+                    });
+
+                }, err => {
+
+                    console.log("err=>", err);
+                    console.log("callback");
+                    conn.release();
+                    if (err == "false") {
+                        resolve({
+                            "error": "false",
+                            "message": records.length + " data imported successfully "
+                        });
+                    }
+                    else {
+                        reject({
+                            "error": "true",
+                            "message": err
+                        });
+                    }
+
+
+
+
+                });
+
+            });
+
+        });
+        return pro;
     }
     getSheetRows(filename, sheetname, recordno) {
         // console.log("has key=", myCache.getStats());
@@ -145,8 +203,8 @@ class CollegeService {
 
                 return 3;//out of range
             }
-            console.log("rows=", rows);
-            console.log("records=", recordno);
+            // console.log("rows=", rows);
+            // console.log("records=", recordno);
             //    if(rows)
             //    {
 
@@ -180,6 +238,25 @@ class CollegeService {
         }
 
 
+    }
+    getCollegeDetailByCodeAndSessionName(code, sessionname) {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+
+                    conn.query("select *from college_" + sessionname + " where code=?", [code], (err, result) => {
+                        // console.log(err, result);
+                        conn.release();
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
     }
     // getSheetRows(filename, sheetname, recordno) {
     //     console.log("has key=", myCache.getStats());

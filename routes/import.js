@@ -346,8 +346,11 @@ route.post("/import2", async (req, res) => {
     let filename = req.body.filename;
     let recordno = req.body.recordno;
     let tablename = req.body.tablename;
+    const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
+    const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
+    console.log("table name=>",tablename);
     if (req.body.type == "college") {
-        collegeService.import(filename, sheetname, recordno, tablename).then((response) => {
+        collegeService.import2(temp,tablename).then((response) => {
             //  console.log("respnse=",response);
             res.json(response);
 
@@ -358,7 +361,7 @@ route.post("/import2", async (req, res) => {
         });
     }
     else if (req.body.type == "subject") {
-        subjectService.import(filename, sheetname, recordno, tablename).then((response) => {
+        subjectService.import2(temp, tablename).then((response) => {
             res.json(response);
         }).catch((err) => {
             //  console.log("error=",err);
@@ -368,8 +371,7 @@ route.post("/import2", async (req, res) => {
     }
     else {
 
-        const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
-        const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
+    
       
         // importService.v
         importService.import2(temp,tablename).then((response) => {

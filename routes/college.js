@@ -29,6 +29,21 @@ route.get("/all", (req, res) => {
 
    
 });
+route.post("/getCollegeDetailByCidAndSession",(res,req) => {
+    collegeService.getCollegeDetailByCodeAndSessionName(req.body.code,req.body.sessionname).then(data=>{
+        res.json({
+            "error":"false",
+            "message":"success",
+            "data": data
+        });
+    }).catch(err=>{
+        res.json({
+            "error":"true",
+            "message":err,
+            // "data": data
+        });
+    });
+});
 route.post('/insert', (req, res)=>{
     console.log(req.body);
     // collegeService.import()
