@@ -29,6 +29,7 @@ app.use((req,res,next) => {
     // console.log(req.url.search("/macaddresscheck"));
     if(req.url.search("/macaddresscheck")>=0)
     {
+        console.log(req.query);
         adminservice.getUserByMacaddress(req.query.macaddress).then(data=>{
             res.json({
                 "error": "false",
@@ -175,9 +176,9 @@ app.use("/college", require("./routes/college"));
 
 app.get('/', (req, res) => {
     res.json({
-        "error": "true",
-        "message": "hello",
-        "testings": "testings"
+        "error": "false",
+        "message": "true",
+        // "testings": "testings"
     });
     // var i = 1,
     //     max = 5;

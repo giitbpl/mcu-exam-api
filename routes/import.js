@@ -112,7 +112,11 @@ route.get('/fileslist', (req, res) => {
 });
 route.post('/getsheet', (req, res) => {
     console.log(req.body.fname);
-    const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.fname);
+    var stats = fs.statSync(process.env.BACKUP_DIR + "/" + req.body.fname);
+    var fileSizeInBytes = stats.size;
+    console.log("file size=>", fileSizeInBytes / (1024));
+
+    const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.fname, { sheetRows: 1 });
     if (file != undefined) {
 
         let data = []
@@ -126,14 +130,14 @@ route.post('/getsheet', (req, res) => {
             "data": sheets
         });
     }
-    
+
 });
 route.post("/sheetrows", async (req, res) => {
     // let filename = req.body.fname;
     let sheetname = req.body.sheetname;
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.fname);
     const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
-    
+
     // let excelRowsObjArr =  reader.utils.sheet_to_row_object_array(file.Sheets[sheetname]);
     // const sheet = file.Sheets[sheetname];
 
@@ -194,44 +198,52 @@ route.post("/import", async (req, res) => {
 });
 route.post('/verify', async (req, res) => {
     // try {
-
-
-    console.log("request->", req.body);
-    let tablename = ""
-    if (req.body.type == 'resultdata') {
-        tablename = "master_template";
-
-    }
-    else if (req.body.type == 'college') {
-        tablename = "college_master";
-
-    }
-    else if (req.body.type == 'subject') {
-        tablename = "subject_code_master";
-    }
-    // let sheetname = req.body.sheetname;
-    // let filename = req.body.filename;
-    // console.log("table name=>",tablename);
-    const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename, { sheetRows: 1 });
-    // console.log("file detail=",file);
-
-    const [columns] = reader.utils.sheet_to_json(file.Sheets[req.body.sheetname], { header: 1 });
-    console.log("file columns=>", columns);
-    if (columns != undefined) {
-
-
-        importService.verifyData(columns, tablename).then(response => {
-            res.json(response);
-        }).catch((err) => {
-            res.jsonp(err);
+    var stats = fs.statSync(process.env.BACKUP_DIR + "/" + req.body.filename);
+    var fileSizeInBytes = stats.size / 1024;
+    console.log("file size=>", fileSizeInBytes);
+    if (fileSizeInBytes > 50000) {
+        res.json({
+            "error": "true",
+            "message": "file size is large then 50 MB please sprit into multiple files"
         });
     }
-    else
-    {
-           res.json({
-                "error":"true",
-                "message":"file not read"
-           }); 
+    else {
+        console.log("request->", req.body);
+        let tablename = ""
+        if (req.body.type == 'resultdata') {
+            tablename = "master_template";
+
+        }
+        else if (req.body.type == 'college') {
+            tablename = "college_master";
+
+        }
+        else if (req.body.type == 'subject') {
+            tablename = "subject_code_master";
+        }
+        // let sheetname = req.body.sheetname;
+        // let filename = req.body.filename;
+        // console.log("table name=>",tablename);
+        const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename, { sheetRows: 1 });
+        // console.log("file detail=",file);
+
+        const [columns] = reader.utils.sheet_to_json(file.Sheets[req.body.sheetname], { header: 1 });
+        console.log("file columns=>", columns);
+        if (columns != undefined) {
+
+
+            importService.verifyData(columns, tablename).then(response => {
+                res.json(response);
+            }).catch((err) => {
+                res.jsonp(err);
+            });
+        }
+        else {
+            res.json({
+                "error": "true",
+                "message": "file not read"
+            });
+        }
     }
     // } catch (error) {
     //    // res.json(error)
@@ -341,53 +353,74 @@ route.post('/analyzed', (req, res) => {
 
 });
 route.post("/import2", async (req, res) => {
-    console.log(req.body);
+    var stats = fs.statSync(process.env.BACKUP_DIR + "/" + req.body.fname);
+    var fileSizeInBytes = stats.size / 1024;
+    console.log("file size=>", fileSizeInBytes);
+    if (fileSizeInBytes > 50000) {
+        res.json({
+            "error": "true",
+            "message": "file size is large then 50 MB please sprit into multiple files"
+        });
+    }
+    else {
+
+
+        console.log(req.body);
+        let sheetname = req.body.sheetname;
+        let filename = req.body.filename;
+        let recordno = req.body.recordno;
+        let tablename = req.body.tablename;
+        const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
+        const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
+        console.log("table name=>", tablename);
+        if (req.body.type == "college") {
+            collegeService.import2(temp, tablename).then((response) => {
+                //  console.log("respnse=",response);
+                res.json(response);
+
+            }).catch((err) => {
+                //  console.log("error=",err);
+                res.json(err);
+
+            });
+        }
+        else if (req.body.type == "subject") {
+            subjectService.import2(temp, tablename).then((response) => {
+                res.json(response);
+            }).catch((err) => {
+                //  console.log("error=",err);
+                res.json(err);
+
+            });
+        }
+        else {
+
+
+
+            // importService.v
+            importService.import2(temp, tablename).then((response) => {
+                //  console.log("respnse=",response);
+                res.json(response);
+
+            }).catch((err) => {
+                //  console.log("error=",err);
+                res.json(err);
+
+            });
+        }
+        // .then(response=>{
+        //     res.json(response);
+        // }).catch(err =>{
+        //    res.json(err);
+        // });
+    }
+});
+route.post("/update", (req, res) => {
     let sheetname = req.body.sheetname;
     let filename = req.body.filename;
     let recordno = req.body.recordno;
     let tablename = req.body.tablename;
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
     const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
-    console.log("table name=>",tablename);
-    if (req.body.type == "college") {
-        collegeService.import2(temp,tablename).then((response) => {
-            //  console.log("respnse=",response);
-            res.json(response);
-
-        }).catch((err) => {
-            //  console.log("error=",err);
-            res.json(err);
-
-        });
-    }
-    else if (req.body.type == "subject") {
-        subjectService.import2(temp, tablename).then((response) => {
-            res.json(response);
-        }).catch((err) => {
-            //  console.log("error=",err);
-            res.json(err);
-
-        });
-    }
-    else {
-
-    
-      
-        // importService.v
-        importService.import2(temp,tablename).then((response) => {
-            //  console.log("respnse=",response);
-            res.json(response);
-
-        }).catch((err) => {
-            //  console.log("error=",err);
-            res.json(err);
-
-        });
-    }
-    // .then(response=>{
-    //     res.json(response);
-    // }).catch(err =>{
-    //    res.json(err);
-    // });
 });
 module.exports = route;

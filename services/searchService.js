@@ -20,10 +20,11 @@ class SearchService {
                         tablename = "course_" + data.coursecode;
 
                     }
-                    // console.log(tablename);
+                    console.log(tablename);
                     let n = data.session_name.split("-");
                     let tablename2 = "college_" + n[0].toLowerCase() + "_" + n[1];
                     let sem=data.sem;
+                    console.log(tablename2);
 
                     // let 
                     // console.log(tablename);
@@ -35,7 +36,7 @@ class SearchService {
                     conn.query("select *from "+tablename+" where enrollno=? and yrtermcode=? and SUBSTRING(examcode2, CHARACTER_LENGTH(examcode2)-1, 1)=?",[data.envno,data.session_name,data.sem], (err, result) => {
                     // console.log(sql);
                     // conn.query(sql, [data.envno, data.session_name,sem], (err, result) => {
-                        console.log(err, result.length);
+                        console.log(err, result);
                         conn.release();
                         if (err) reject(err);
                         else resolve(result);
@@ -122,7 +123,13 @@ class SearchService {
                     //  console.log("table name=>",tablename);
                     //  console.log("request name=>",courseCode);
                     //  console.log("request name=>",enrollment);
-                    let tablename = "course_" + data.coursecode;
+                    let tablename="course_media";
+                    if(data.coursecode == 14 || data.coursecode ==16 || data.coursecode ==17)
+                    {
+                        tablename = "course_" + data.coursecode;
+
+                    }
+                    // tablename = "course_" + data.coursecode;
                     // conn.query("select distinct yrtermcode from "+tablename+" where enrollno=?",[enrollment], (err, result) => {
                     conn.query("SELECT DISTINCT semobt,semoutof,semresult,examcode2,SGPA,yrtermcode,agrtotobtn,agrtotout,CGPA,agrpercent,agrdiv,withheld,remark1,remark2  from "+tablename+" WHERE enrollno=? ORDER by examcode2;", [data.envno], (err, result) => {
                         // console.log(err, result);
