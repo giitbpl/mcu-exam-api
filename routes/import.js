@@ -353,7 +353,7 @@ route.post('/analyzed', (req, res) => {
 
 });
 route.post("/import2", async (req, res) => {
-    var stats = fs.statSync(process.env.BACKUP_DIR + "/" + req.body.fname);
+    var stats = fs.statSync(process.env.BACKUP_DIR + "/" + req.body.filename);
     var fileSizeInBytes = stats.size / 1024;
     console.log("file size=>", fileSizeInBytes);
     if (fileSizeInBytes > 50000) {

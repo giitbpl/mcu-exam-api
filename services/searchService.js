@@ -131,7 +131,7 @@ class SearchService {
                     }
                     // tablename = "course_" + data.coursecode;
                     // conn.query("select distinct yrtermcode from "+tablename+" where enrollno=?",[enrollment], (err, result) => {
-                    conn.query("SELECT DISTINCT semobt,semoutof,semresult,examcode2,SGPA,yrtermcode,agrtotobtn,agrtotout,CGPA,agrpercent,agrdiv,withheld,remark1,remark2  from "+tablename+" WHERE enrollno=? ORDER by examcode2;", [data.envno], (err, result) => {
+                    conn.query("SELECT DISTINCT semobt,semoutof,semresult,examcode2,SGPA,yrtermcode,agrtotobtn,agrtotout,CGPA,agrpercent,agrdiv,withheld,remark1,remark2  from "+tablename+" WHERE enrollno=? and semresult='PASS' ORDER by examcode2;", [data.envno], (err, result) => {
                         // console.log(err, result);
                         conn.release();
                         if (err) reject(err);
