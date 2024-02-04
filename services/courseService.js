@@ -32,7 +32,7 @@ class CourseService {
                 else {
 
                     conn.query("select * from course_master where code=? ", [code], (err, result) => {
-                        // console.log(err, result);
+                        console.log(err, result);
                         conn.release(); 
                         resolve(result);
                         // if (err) reject(err);

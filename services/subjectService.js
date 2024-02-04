@@ -34,12 +34,12 @@ class SubjectService {
         console.log(codeList);
         let p = new Promise((resolve, reject) => {
             connection.getConnection((err, conn) => {
-                // console.log(err);
+                console.log(err);
                 if (err) reject(err);
                 else {
 
                     conn.query("SELECT * FROM subject_code_master WHERE SUBJE in (" + codeList + ")", (err, result) => {
-                        // console.log(err, result);
+                        console.log(err, result);
                         conn.release();
                         if (err) reject(err);
                         else resolve(result);
