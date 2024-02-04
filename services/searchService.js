@@ -6,7 +6,7 @@ const courseService = require("./courseService");
 
 class SearchService {
     search(data) {
-        // console.log(data);
+        console.log("search-data=",data);
         let p = new Promise((resolve, reject) => {
             connection.getConnection(async (err, conn) => {
                 // console.log(err);
@@ -36,7 +36,7 @@ class SearchService {
                     // conn.query("select *from "+tablename+" where enrollno=? and yrtermcode=? and SUBSTRING(examname,1,1)=?",[data.envno,data.session_name,data.sem], (err, result) => {
                     // console.log(sql);
                     conn.query(sql, [data.envno, data.session_name,sem], (err, result) => {
-                        console.log("result", result);
+                    //    console.log("result", result);
                         conn.release();
                         if (err) reject(err);
                         else resolve(result);
@@ -51,7 +51,7 @@ class SearchService {
 
         let p = new Promise((resolve, reject) => {
             connection.getConnection(async (err, conn) => {
-                // console.log(err);
+                console.log("courseCodecode=",courseCode);
                 if (err) reject(err);
                 else {
                     let tablename="course_media";
@@ -69,8 +69,8 @@ class SearchService {
 
                     // conn.query("select distinct yrtermcode from "+tablename+" where enrollno=?",[enrollment], (err, result) => {
                     // conn.query("select distinct yrtermcode from " + tablename + " where  SUBSTRING(examcode2, CHARACTER_LENGTH(examcode2)-1, 1)=? and enrollno=?", [semester,enrollment], (err, result) => {
-                    conn.query("select distinct yrtermcode from " + tablename + " where  SUBSTRING(examname,1,1)=? and enrollno=?", [semester,enrollment], (err, result) => {
-                        // console.log(result);
+                    conn.query("select distinct yrtermcode from " + tablename + " where  SUBSTRING(examname,1,1)=? and enrollno=? and examcode like '"+courseCode+"%'", [semester,enrollment], (err, result) => {
+                        console.log(err);
                         // if()
                         conn.release();
                         if (err) reject(err);
@@ -168,7 +168,7 @@ class SearchService {
                     // conn.query("select *from "+tablename+" where enrollno=? and yrtermcode=?",[data.envno,data.session_name], (err, result) => {
                     // console.log(sql);
                     conn.query(sql, [data.envno], (err, result) => {
-                        console.log(err, result.length);
+                     //   console.log(err, result.length);
                     //    let res = result.reduce((r, { yrtermcode: name, ...object }) => {
                     //         var temp = r.find(o => o.name === name);
                     //         if (!temp) r.push(temp = { name, children: [] });
