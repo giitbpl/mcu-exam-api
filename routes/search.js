@@ -1,5 +1,5 @@
 const express = require("express");
-const searchService = require("../services/searchService");
+const searchService = require("../services/searchService-copy");
 const subjectService = require("../services/subjectService");
 const route = express.Router();
 require("dotenv").config();
