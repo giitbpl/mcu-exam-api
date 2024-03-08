@@ -324,5 +324,27 @@ class AdminService {
         });
         return p;
     }
+    serverStart()
+    {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log("requested user detail=>", user);
+                if (err) reject(err);
+                else {
+                    // let salt = crypto.randomBytes(20).toString('hex')
+                    // let password = hash.hashPassword(user.pwd + salt);
+
+                    conn.query("INSERT INTO server_log (start) VALUES (NOW());", (err, result) => {
+                        // console.log("err");
+                        conn.release();
+                        if (err) reject(err);
+                        resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
 }
 module.exports = new AdminService();

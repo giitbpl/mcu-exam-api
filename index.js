@@ -14,7 +14,7 @@ const adminservice = require('./services/AdminService');
 const logservice = require("./services/logService");
 // const { error } = require('console');
 // const pino = require('pino-http')()
-
+const serverService = require("./services/AdminService");
 
 dotenv.config();
 // app.use(cors({
@@ -144,13 +144,16 @@ app.use(function (req, res, next) {
     // next();
 });
 
-app.listen(process.env.PORT, '0.0.0.0', (err) => {
+let server=app.listen(process.env.PORT, '0.0.0.0', (err) => {
     if (err) throw err;
     console.log("running =" + process.env.PORT);
-    let output = {
-        "error": "server error",
-        "message": "server restarted"
-    };
+    serverService.serverStart().then(() => {}).catch((err) => {
+        console.log("error =" + err);
+    });
+    // let output = {
+    //     "error": "server error",
+    //     "message": "server restarted"
+    // };
     // logger.error(output);
     // If current directory does not exist
     // then create it
@@ -163,6 +166,9 @@ app.listen(process.env.PORT, '0.0.0.0', (err) => {
     // });
 
 
+});
+server.close((err) => {
+    console.log("closed");
 });
 app.use("/admin", require("./routes/admin"));
 app.use("/import", require("./routes/import"));
