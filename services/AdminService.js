@@ -85,7 +85,7 @@ class AdminService {
     register(user) {
         let p = new Promise((resolve, reject) => {
             connection.getConnection((err, conn) => {
-                console.log("requested user detail=>", user);
+                // console.log("requested user detail=>", user);
                 if (err) reject(err);
                 else {
                     let salt = crypto.randomBytes(20).toString('hex')
@@ -345,6 +345,10 @@ class AdminService {
             });
         });
         return p;
+    }
+    userstatics()
+    {
+        
     }
 }
 module.exports = new AdminService();

@@ -131,7 +131,7 @@ class CollegeService {
 
 
     }
-    import2(records, tablename) {
+    import2(records, tablename,session) {
         // console.log("data-length=>",data[0]);
         console.log("tablename=>", tablename);
         let pro = new Promise((resolve, reject) => {
@@ -141,13 +141,13 @@ class CollegeService {
 
 
                 async.forEachOf(records, (data, key, callback) => {
-
-                    let address = data["ADDRESS"];
+                    // console.log(data);
+                    let address = data["address"];
                     if (address == undefined) {
 
                         address = "";
                     }
-                    conn.query("INSERT INTO " + tablename + " (`code`, `COLLEGE / CENTER NAME`, `address`, `city`, `dist`, `state`, `pin`) VALUES (?,?,?,?,?,?,?)", [data["CODE"], data["COLLEGE / CENTER NAME"], address.substring(0, 150), data["CITY"], data["DIST"], data["STATE"], data["PIN"]], (err, result) => {
+                    conn.query("INSERT INTO " + tablename + " (`code`, `COLLEGE / CENTER NAME`, `address`, `city`, `dist`, `state`, `pin`,`session`) VALUES (?,?,?,?,?,?,?,?)", [data["code"], data["COLLEGE / CENTER NAME"], address.substring(0, 150), data["city"], data["dist"], data["state"], data["pin"],session], (err, result) => {
 
                         // callback(i);
                         console.log(key, " ", records.length);

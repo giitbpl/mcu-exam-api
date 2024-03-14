@@ -37,7 +37,7 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/admin/register HTTP/1.1
 Content-Type: application/json
-Authorization: "Bearer "
+Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpaXRicGxAZ21haWwuY29tIiwicm9sZSI6MSwidWlkIjo0MywiaWF0IjoxNzEwMzgyMjcxfQ.8OC3DD6oL-dnsBgYs27kwIsAdLQmmUd_BH-BqaYCBgc"
 
 {
     "ipaddress":"127.0.0.1",

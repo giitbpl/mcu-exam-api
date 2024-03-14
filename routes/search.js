@@ -2,28 +2,42 @@ const express = require("express");
 const searchService = require("../services/searchService-copy");
 const subjectService = require("../services/subjectService");
 const route = express.Router();
+const JwtToken = require('../services/JwtToken');
+
+const userActivityLogService = require("../services/UserActivityLogService");
 require("dotenv").config();
 // var fs = require('fs');
 // var spawn = require('child_process').spawn;
 // var mysqlDump = require('mysqldump');
 
 route.post("/search", (req, res) => {
-    // console.log(req.body);
-   searchService.search(req.body).then((data) => {
-    // console.log(data);
-    res.json({
-        "error":"false",
-        "message":"success",
-        "data": data
+    // console.log(req);
+    let reqtoken = req.headers.authorization.split(" ");
+    //   console.log("request token", reqtoken);
+    token = JwtToken.verify(reqtoken[1], process.env.JWT_SECRET_TOKEN);
+    console.log(token);
+    userActivityLogService.updateSearchLog(token.uid).then((r) => {
+        console.log(r);
+        searchService.search(req.body).then((data) => {
+            // console.log(data);
+          
+            res.json({
+                "error":"false",
+                "message":"success",
+                "data": data
+            });
+           }).catch((err) =>{
+            // console.log(err.sqlMessage);
+            res.json({
+                "error":"true",
+                "message":err.sqlMessage,
+                // "data": data
+            });
+           });
+    }).catch((e) => {
+        console.log(e);
     });
-   }).catch((err) =>{
-    // console.log(err.sqlMessage);
-    res.json({
-        "error":"true",
-        "message":err.sqlMessage,
-        // "data": data
-    });
-   });
+  
 
    
 });

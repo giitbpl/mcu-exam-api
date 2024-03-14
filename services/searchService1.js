@@ -6,7 +6,7 @@ const courseService = require("./courseService");
 
 class SearchService {
     search(data) {
-        console.log("search-data=",data);
+        // console.log("search-data=",data);
         let p = new Promise((resolve, reject) => {
             connection.getConnection(async (err, conn) => {
                 // console.log(err);
@@ -20,11 +20,11 @@ class SearchService {
                         tablename = "course_" + data.coursecode;
 
                     }
-                    console.log(tablename);
+                    // console.log(tablename);
                     let n = data.session_name.split("-");
                     let tablename2 = "college_" + n[0].toLowerCase() + "_" + n[1];
                     let sem=data.sem;
-                    console.log(tablename2);
+                    // console.log(tablename2);
 
                
                     // SELECT A.*,B.`COLLEGE / CENTER NAME`,B.city,B.dist,B.session FROM course_media as A LEFT JOIN college_master as B on A.examcent=B.code where A.enrollno='AW1020999023' and A.yrtermcode='DEC-2020' and SUBSTRING(A.examname,1,1)=1 and B.session='DEC-2020';
@@ -50,7 +50,7 @@ class SearchService {
 
         let p = new Promise((resolve, reject) => {
             connection.getConnection(async (err, conn) => {
-                console.log("courseCodecode=",courseCode);
+                // console.log("courseCodecode=",courseCode);
                 if (err) reject(err);
                 else {
                     let tablename="course_media";

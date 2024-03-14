@@ -7,6 +7,7 @@ const adminservice = require("../services/AdminService");
 // const classTransformer = require('class-transformer');
 const UserModel = require("../models/UserModel");
 const jwt = require("../services/JwtToken");
+const userActivityLogService=require("../services/UserActivityLogService");
 // const JwtToken = require("../services/JwtToken");
 route.get("/logout", (req, res) => {
 adminservice.logout().then((data) => {
@@ -79,14 +80,20 @@ route.post('/returnhash', (req, res) => {
 route.post('/register', (req, res) => {
     console.log(req.body);
     adminservice.register(req.body).then((response) => {
-        res.json({
-            "error": "false",
-            "data": response,
-
-            "message": "Registration successfully"
-        });
+        console.log(response);
+       userActivityLogService.createUserActivityLog(response.insertId).then((activity) => {
+            res.json({
+                "error": "false",
+                "data": response,
+    
+                "message": "Registration successfully"
+            });
+       }).catch((error) => {
+           console.log(error);
+       });
+       
     }).catch((err) => {
-        // console.log("error==>",err);
+        console.log("error==>",err);
         if (err.sqlMessage.search("user.macaddress") > 0) {
             res.json({
                 "error": "true",

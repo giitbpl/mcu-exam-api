@@ -38,7 +38,7 @@ class SearchService {
                     // conn.query("select *from "+tablename+" where enrollno=? and yrtermcode=? and SUBSTRING(examname,1,1)=?",[data.envno,data.session_name,data.sem], (err, result) => {
                     // console.log(sql);
                     conn.query(sql, [data.envno, data.session_name,sem,data.session_name], (err, result) => {
-                       console.log("result", result);
+                       console.log("result=", result.length);
                        console.log("err", err);
                         conn.release();
                         if (err) reject(err);

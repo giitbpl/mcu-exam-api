@@ -277,7 +277,7 @@ route.post("/createtable", (req, res) => {
 });
 route.get("/getalltablesname", (req, res) => {
     importService.getAllTableNames().then(data => {
-        let ignoredTableNames = ["user", "activity_log", "master_template", "course_master", "college_master"];
+        let ignoredTableNames = ["user", "activity_log", "master_template", "course_master"];
         // let tables =[];
 
         const tables = data.filter((value) => {
@@ -370,11 +370,12 @@ route.post("/import2", async (req, res) => {
         let filename = req.body.filename;
         let recordno = req.body.recordno;
         let tablename = req.body.tablename;
+        let session=req.body.session;
         const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
         const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
         console.log("table name=>", tablename);
         if (req.body.type == "college") {
-            collegeService.import2(temp, tablename).then((response) => {
+            collegeService.import2(temp, tablename,session).then((response) => {
                 //  console.log("respnse=",response);
                 res.json(response);
 
