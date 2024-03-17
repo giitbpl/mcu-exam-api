@@ -38,7 +38,7 @@ class SearchService {
                     // conn.query("select *from "+tablename+" where enrollno=? and yrtermcode=? and SUBSTRING(examname,1,1)=?",[data.envno,data.session_name,data.sem], (err, result) => {
                     // console.log(sql);
                     conn.query(sql, [data.envno, data.session_name,sem,data.session_name], (err, result) => {
-                       console.log("result=", result.length);
+                       console.log("result=", result);
                        console.log("err", err);
                         conn.release();
                         if (err) reject(err);
@@ -137,7 +137,7 @@ class SearchService {
                     }
                     // tablename = "course_" + data.coursecode;
                     // conn.query("select distinct yrtermcode from "+tablename+" where enrollno=?",[enrollment], (err, result) => {
-                    conn.query("SELECT DISTINCT semobt,semoutof,semresult,examcode2,SGPA,yrtermcode,agrtotobtn,agrtotout,CGPA,agrpercent,agrdiv,withheld,remark1,remark2  from "+tablename+" WHERE enrollno=? and semresult='PASS' ORDER by examcode2;", [data.envno], (err, result) => {
+                    conn.query("SELECT DISTINCT examname,agrresult,agrdiv, semobt,semoutof,semresult,examcode2,SGPA,yrtermcode,agrtotobtn,agrtotout,CGPA,agrpercent,agrdiv,withheld,remark1,remark2  from "+tablename+" WHERE enrollno=? and semresult='PASS' ORDER by examcode2;", [data.envno], (err, result) => {
                         // console.log(err, result);
                         conn.release();
                         if (err) reject(err);

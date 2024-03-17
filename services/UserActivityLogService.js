@@ -65,5 +65,25 @@ class UserActivityLogService {
 
         
     }
+    getUserActivityLog(uid)
+    {
+        let p = new Promise((resolve, reject) => {
+            connection.getConnection((err, conn) => {
+                // console.log(err);
+                if (err) reject(err);
+                else {
+
+                    conn.query("select `search`, `login` from user_activity_log where uid=?",[uid], (err, result) => {
+                        console.log(err, result);
+                        conn.release();
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
+
+                }
+            });
+        });
+        return p;
+    }
 }
 module.exports = new UserActivityLogService();

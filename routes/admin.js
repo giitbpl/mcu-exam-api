@@ -7,20 +7,20 @@ const adminservice = require("../services/AdminService");
 // const classTransformer = require('class-transformer');
 const UserModel = require("../models/UserModel");
 const jwt = require("../services/JwtToken");
-const userActivityLogService=require("../services/UserActivityLogService");
+const userActivityLogService = require("../services/UserActivityLogService");
 // const JwtToken = require("../services/JwtToken");
 route.get("/logout", (req, res) => {
-adminservice.logout().then((data) => {
-    res.send({
-        "error":"false",
-        "message":"success"
+    adminservice.logout().then((data) => {
+        res.send({
+            "error": "false",
+            "message": "success"
+        });
+    }).catch((error) => {
+        res.send({
+            "error": "true",
+            "message": "error"
+        });
     });
-}).catch((error) => {
-    res.send({
-        "error":"true",
-        "message":"error"
-    });
-});
 });
 
 route.post('/login', (req, res) => {
@@ -29,15 +29,19 @@ route.post('/login', (req, res) => {
     // console.log(user,pwd);
     adminservice.login(user, pwd).then(result => {
         // console.log("user found=>", result);
-        let token = jwt.getNewToken({ "email": req.body.email,"role":result[0].role,"uid":result[0].uid }, process.env.JWT_SECRET_TOKEN);
+        let token = jwt.getNewToken({ "email": req.body.email, "role": result[0].role, "uid": result[0].uid }, process.env.JWT_SECRET_TOKEN);
+        userActivityLogService.updateLoginLog(result[0].uid).then(r => {
+            res.json({
+                "error": "false",
+                "token": token,
+                "role": result[0].role,
+                "message": "success"
 
-        res.json({
-            "error": "false",
-            "token": token,
-            "role": result[0].role,
-            "message": "success"
+            });
+        }).catch(error => {
 
         });
+
     }).catch(err => {
         console.log("error: ", err);
         res.json({
@@ -81,33 +85,33 @@ route.post('/register', (req, res) => {
     console.log(req.body);
     adminservice.register(req.body).then((response) => {
         console.log(response);
-       userActivityLogService.createUserActivityLog(response.insertId).then((activity) => {
+        userActivityLogService.createUserActivityLog(response.insertId).then((activity) => {
             res.json({
                 "error": "false",
                 "data": response,
-    
+
                 "message": "Registration successfully"
             });
-       }).catch((error) => {
-           console.log(error);
-       });
-       
+        }).catch((error) => {
+            console.log(error);
+        });
+
     }).catch((err) => {
-        console.log("error==>",err);
+        console.log("error==>", err);
         if (err.sqlMessage.search("user.macaddress") > 0) {
             res.json({
                 "error": "true",
                 "message": "duplicate Mac Address"
                 // "data":response
             });
-        } else  if (err.sqlMessage.search("user.ipaddress") > 0) {
+        } else if (err.sqlMessage.search("user.ipaddress") > 0) {
             res.json({
                 "error": "true",
                 "message": "duplicate Ip IP Address"
                 // "data":response
             });
         }
-        else  if (err.sqlMessage.search("user.email") > 0) {
+        else if (err.sqlMessage.search("user.email") > 0) {
             res.json({
                 "error": "true",
                 "message": "email address is already in use"
@@ -198,65 +202,65 @@ route.get('/getuserbyuid/:uid', (req, res) => {
     });
 });
 route.post("/token", (req, res) => {
-    let detail=jwt.verify(req.body.token,process.env.JWT_SECRET_TOKEN);
+    let detail = jwt.verify(req.body.token, process.env.JWT_SECRET_TOKEN);
     adminservice.getUserByUid(detail.uid).then(userdetail => {
         res.json({
-            "error":"false",
-            "data":userdetail[0],
-            "message":"success"
+            "error": "false",
+            "data": userdetail[0],
+            "message": "success"
         });
-    }).catch(error =>{
+    }).catch(error => {
         res.json({
-            "error":"true",
+            "error": "true",
             // "data":userdetail[0],
-            "message":"fail"
+            "message": "fail"
         });
     });
-  
+
     // return jwt.verify(req.body.token,process.env.JWT_SECRET_TOKEN);
 });
-route.get('/getip',(req,res) => {
+route.get('/getip', (req, res) => {
     const clientIP = req.ip;
     res.setHeader('ClientIP', clientIP);
     // res.status(200).send();
     res.json({
-        "error":"false",
-        "message":"success",
-        "clientip":clientIP
+        "error": "false",
+        "message": "success",
+        "clientip": clientIP
     });
 });
-route.post("/chpwd",(req,res) => {
+route.post("/chpwd", (req, res) => {
     console.log(req.body.uid);
     adminservice.changePassword(req.body).then((response) => {
         res.json({
-            "error":"false",
-            "message":"success",
+            "error": "false",
+            "message": "success",
         });
-    }).catch((err) =>{
+    }).catch((err) => {
         res.json({
-            "error":"true",
-            "message":err,
+            "error": "true",
+            "message": err,
         });
     });
 });
 route.post('/updateuser', (req, res) => {
-    adminservice.updateUser(req.body,req.body.uid).then(result=>{
+    adminservice.updateUser(req.body, req.body.uid).then(result => {
         console.log(result);
-    }).catch((err) =>{
+    }).catch((err) => {
         console.log(err);
     });
 });
 route.post("/changestatus", (req, res) => {
-    adminservice.changeUserStatus(req.body.userid).then(result=>{
+    adminservice.changeUserStatus(req.body.userid).then(result => {
         res.json({
             "error": "false",
             "message": "status changed"
         });
-    }).catch(err=>{
+    }).catch(err => {
         res.json({
             "error": "true",
             "message": "something went wrong"
         });
     });
-});    
+});
 module.exports = route;
