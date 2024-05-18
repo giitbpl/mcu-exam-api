@@ -395,9 +395,6 @@ route.post("/import2", async (req, res) => {
             });
         }
         else {
-
-
-
             // importService.v
             importService.import2(temp, tablename).then((response) => {
                 //  console.log("respnse=",response);
@@ -423,5 +420,11 @@ route.post("/update", (req, res) => {
     let tablename = req.body.tablename;
     const file = reader.readFile(process.env.BACKUP_DIR + "/" + req.body.filename);
     const temp = reader.utils.sheet_to_json(file.Sheets[sheetname]);
+    
+    importService.update(temp,tablename).then((data)=>{
+        res.json(data);
+    }).catch(error =>{
+        res.json( error);
+    });
 });
 module.exports = route;
